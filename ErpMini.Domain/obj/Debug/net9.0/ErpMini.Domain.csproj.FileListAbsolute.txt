@@ -1,0 +1,11 @@
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\obj\Debug\net9.0\ErpMini.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\obj\Debug\net9.0\ErpMini.Domain.AssemblyInfoInputs.cache
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\obj\Debug\net9.0\ErpMini.Domain.AssemblyInfo.cs
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\obj\Debug\net9.0\ErpMini.Domain.csproj.CoreCompileInputs.cache
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\bin\Debug\net9.0\ErpMini.Domain.deps.json
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\bin\Debug\net9.0\ErpMini.Domain.dll
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\bin\Debug\net9.0\ErpMini.Domain.pdb
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\obj\Debug\net9.0\ErpMini.Domain.dll
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\obj\Debug\net9.0\refint\ErpMini.Domain.dll
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\obj\Debug\net9.0\ErpMini.Domain.pdb
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Domain\obj\Debug\net9.0\ref\ErpMini.Domain.dll

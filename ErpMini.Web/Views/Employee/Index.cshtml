@@ -1,0 +1,99 @@
+@model IEnumerable<ErpMini.Application.DTOs.EmployeeDto>
+@{ ViewData["Title"] = "Employees"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="page-header-title">Employee List</p>
+        <p class="page-header-sub">Manage all employees</p>
+    </div>
+    <a asp-action="Create" class="btn btn-dark btn-sm px-3">
+        <i class="bi bi-plus-lg me-1"></i> Add Employee
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+            <input type="text" id="searchInput" class="form-control form-control-sm"
+                   placeholder="Search by name, code, department..."
+                   style="max-width:280px">
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="empTable">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Phone</th>
+                        <th>Joining Date</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var emp in Model)
+                {
+                    <tr>
+                        <td><code class="text-secondary">@emp.EmployeeCode</code></td>
+                        <td>
+                            <div class="fw-medium">@emp.FullName</div>
+                            <div class="text-muted" style="font-size:.75rem">@emp.Email</div>
+                        </td>
+                        <td>@emp.DepartmentName</td>
+                        <td>@emp.DesignationTitle</td>
+                        <td>@emp.Phone</td>
+                        <td>@emp.JoiningDate.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <span class="badge @(emp.IsActive ? "badge-active" : "badge-inactive")">
+                                @(emp.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td class="text-end pe-3">
+                            <a asp-action="Details" asp-route-id="@emp.Id"
+                               class="btn btn-sm btn-outline-secondary me-1"
+                               title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@emp.Id"
+                               class="btn btn-sm btn-outline-primary me-1"
+                               title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form asp-action="Delete" asp-route-id="@emp.Id"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete @emp.FullName?')">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-people" style="font-size:2.5rem"></i>
+                <p class="mt-2 mb-3">No employees found.</p>
+                <a asp-action="Create" class="btn btn-sm btn-dark">Add First Employee</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+        const val = this.value.toLowerCase();
+        document.querySelectorAll('#empTable tbody tr').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
+        });
+    });
+</script>
+}

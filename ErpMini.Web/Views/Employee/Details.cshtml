@@ -1,0 +1,89 @@
+@model ErpMini.Application.DTOs.EmployeeDto
+@{ ViewData["Title"] = "Employee Details"; }
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div class="flex-grow-1">
+        <p class="page-header-title">@Model.FullName</p>
+        <p class="page-header-sub">@Model.EmployeeCode &nbsp;·&nbsp; @Model.DesignationTitle</p>
+    </div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-pencil me-1"></i> Edit
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">Personal Information</div>
+            <div class="card-body p-0">
+                <table class="table table-borderless mb-0" style="font-size:.875rem">
+                    <tr>
+                        <td class="text-muted ps-4 py-2" style="width:45%">Full Name</td>
+                        <td class="fw-medium py-2">@Model.FullName</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Email</td>
+                        <td class="py-2">@Model.Email</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Phone</td>
+                        <td class="py-2">@Model.Phone</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Gender</td>
+                        <td class="py-2">@Model.Gender</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Date of Birth</td>
+                        <td class="py-2">@Model.DateOfBirth.ToString("dd MMM yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Address</td>
+                        <td class="py-2">@(string.IsNullOrEmpty(Model.Address) ? "—" : Model.Address)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">Employment Information</div>
+            <div class="card-body p-0">
+                <table class="table table-borderless mb-0" style="font-size:.875rem">
+                    <tr>
+                        <td class="text-muted ps-4 py-2" style="width:45%">Employee Code</td>
+                        <td class="py-2"><code>@Model.EmployeeCode</code></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Department</td>
+                        <td class="fw-medium py-2">@Model.DepartmentName</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Designation</td>
+                        <td class="py-2">@Model.DesignationTitle</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Joining Date</td>
+                        <td class="py-2">@Model.JoiningDate.ToString("dd MMM yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Basic Salary</td>
+                        <td class="fw-medium py-2">৳ @Model.BasicSalary.ToString("N0")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Status</td>
+                        <td class="py-2">
+                            <span class="badge @(Model.IsActive ? "badge-active" : "badge-inactive")">
+                                @(Model.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

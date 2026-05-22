@@ -1,0 +1,123 @@
+@model ErpMini.Web.ViewModels.EmployeeViewModel
+@{ ViewData["Title"] = "Add Employee"; }
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+        <p class="page-header-title">Add New Employee</p>
+        <p class="page-header-sub">Fill in the details below</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div class="row g-4">
+
+        <!-- Left column -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">Personal Information</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="FirstName" class="form-label fw-medium"></label>
+                            <input asp-for="FirstName" class="form-control" placeholder="First name" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="LastName" class="form-label fw-medium"></label>
+                            <input asp-for="LastName" class="form-control" placeholder="Last name" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-medium"></label>
+                            <input asp-for="Email" class="form-control" placeholder="email@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label fw-medium"></label>
+                            <input asp-for="Phone" class="form-control" placeholder="+880..." />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Gender" class="form-label fw-medium"></label>
+                            <select asp-for="Gender" class="form-select">
+                                <option value="">— Select —</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span asp-validation-for="Gender" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="DateOfBirth" class="form-label fw-medium"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control"
+                                   value="@Model.DateOfBirth.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Address" class="form-label fw-medium"></label>
+                            <textarea asp-for="Address" class="form-control" rows="2"
+                                      placeholder="Full address"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header">Employment Details</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="DepartmentId" class="form-label fw-medium"></label>
+                            <select asp-for="DepartmentId" asp-items="Model.Departments" class="form-select">
+                                <option value="">— Select Department —</option>
+                            </select>
+                            <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="DesignationId" class="form-label fw-medium"></label>
+                            <select asp-for="DesignationId" asp-items="Model.Designations" class="form-select">
+                                <option value="">— Select Designation —</option>
+                            </select>
+                            <span asp-validation-for="DesignationId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="JoiningDate" class="form-label fw-medium"></label>
+                            <input asp-for="JoiningDate" type="date" class="form-control"
+                                   value="@Model.JoiningDate.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="JoiningDate" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="BasicSalary" class="form-label fw-medium"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">৳</span>
+                                <input asp-for="BasicSalary" type="number"
+                                       class="form-control" step="0.01" min="0"
+                                       placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="BasicSalary" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-dark">
+                    <i class="bi bi-check-lg me-1"></i> Save Employee
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

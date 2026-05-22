@@ -1,0 +1,15 @@
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ErpMini.Application.csproj.AssemblyReference.cache
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ErpMini.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ErpMini.Application.AssemblyInfoInputs.cache
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ErpMini.Application.AssemblyInfo.cs
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ErpMini.Application.csproj.CoreCompileInputs.cache
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\bin\Debug\net9.0\ErpMini.Application.deps.json
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\bin\Debug\net9.0\ErpMini.Application.dll
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\bin\Debug\net9.0\ErpMini.Application.pdb
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\bin\Debug\net9.0\ErpMini.Domain.dll
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\bin\Debug\net9.0\ErpMini.Domain.pdb
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ErpMini..A2D86F54.Up2Date
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ErpMini.Application.dll
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\refint\ErpMini.Application.dll
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ErpMini.Application.pdb
+C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Application\obj\Debug\net9.0\ref\ErpMini.Application.dll
