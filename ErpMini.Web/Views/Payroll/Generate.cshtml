@@ -1,0 +1,120 @@
+<!-- ErpMini.Web/Views/Payroll/Generate.cshtml -->
+@model ErpMini.Web.ViewModels.GeneratePayrollViewModel
+@{ ViewData["Title"] = "Generate Payroll"; }
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+        <p class="page-header-title">Generate Payroll</p>
+        <p class="page-header-sub">Create a payroll entry for an employee</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <form asp-action="Generate" method="post">
+            @Html.AntiForgeryToken()
+            <div class="card">
+                <div class="card-header">Payroll Details</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="EmployeeId" class="form-label fw-medium"></label>
+                            <select asp-for="EmployeeId" asp-items="Model.Employees"
+                                    class="form-select" id="employeeSelect">
+                                <option value="">— Select Employee —</option>
+                            </select>
+                            <span asp-validation-for="EmployeeId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Month" class="form-label fw-medium"></label>
+                            <select asp-for="Month" asp-items="Model.Months" class="form-select"></select>
+                            <span asp-validation-for="Month" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Year" class="form-label fw-medium"></label>
+                            <select asp-for="Year" asp-items="Model.Years" class="form-select"></select>
+                            <span asp-validation-for="Year" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="BasicSalary" class="form-label fw-medium"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">৳</span>
+                                <input asp-for="BasicSalary" type="number" step="0.01"
+                                       class="form-control" id="basicSalary" />
+                            </div>
+                            <span asp-validation-for="BasicSalary" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Bonus" class="form-label fw-medium"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">৳</span>
+                                <input asp-for="Bonus" type="number" step="0.01"
+                                       class="form-control" id="bonus" value="0" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Deduction" class="form-label fw-medium"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">৳</span>
+                                <input asp-for="Deduction" type="number" step="0.01"
+                                       class="form-control" id="deduction" value="0" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-medium">Net Salary</label>
+                            <div class="input-group">
+                                <span class="input-group-text">৳</span>
+                                <input type="text" class="form-control fw-semibold bg-light"
+                                       id="netSalary" readonly />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Note" class="form-label fw-medium"></label>
+                            <input asp-for="Note" class="form-control"
+                                   placeholder="Optional note" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-3">
+                <button type="submit" class="btn btn-dark">
+                    <i class="bi bi-check-lg me-1"></i> Generate Payroll
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+<script>
+    // Auto-fill salary when employee is selected
+    document.getElementById('employeeSelect').addEventListener('change', async function () {
+        const id = this.value;
+        if (!id) return;
+        const res = await fetch(`/Payroll/GetEmployeeSalary?employeeId=${id}`);
+        const data = await res.json();
+        document.getElementById('basicSalary').value = data.salary;
+        calculateNet();
+    });
+
+    // Live net salary calculation
+    ['basicSalary', 'bonus', 'deduction'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateNet);
+    });
+
+    function calculateNet() {
+        const basic = parseFloat(document.getElementById('basicSalary').value) || 0;
+        const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+        const deduction = parseFloat(document.getElementById('deduction').value) || 0;
+        document.getElementById('netSalary').value = (basic + bonus - deduction).toLocaleString('en-US', {minimumFractionDigits: 2});
+    }
+
+    calculateNet();
+</script>
+}

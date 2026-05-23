@@ -15,6 +15,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Designation> Designations => Set<Designation>();
 public DbSet<LeaveType> LeaveTypes => Set<LeaveType>();
 public DbSet<LeaveApplication> LeaveApplications => Set<LeaveApplication>();
+public DbSet<Payroll> Payrolls => Set<Payroll>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -54,6 +55,18 @@ builder.Entity<LeaveApplication>()
     .HasForeignKey(l => l.LeaveTypeId)
     .OnDelete(DeleteBehavior.Restrict);
 
+builder.Entity<Payroll>().HasQueryFilter(p => !p.IsDeleted);
+
+builder.Entity<Payroll>()
+    .HasOne(p => p.Employee)
+    .WithMany()
+    .HasForeignKey(p => p.EmployeeId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+// Unique constraint: one payroll per employee per month/year
+builder.Entity<Payroll>()
+    .HasIndex(p => new { p.EmployeeId, p.Month, p.Year })
+    .IsUnique();
 
         // Seed data
 builder.Entity<Department>().HasData(

@@ -38,7 +38,7 @@ try
     builder.Services.AddScoped<IDepartmentService, DepartmentService>();
     builder.Services.AddScoped<IDesignationService, DesignationService>();
     builder.Services.AddScoped<ILeaveService, LeaveService>();
-
+builder.Services.AddScoped<IPayrollService, PayrollService>();
     builder.Services.AddControllersWithViews();
 
     var app = builder.Build();

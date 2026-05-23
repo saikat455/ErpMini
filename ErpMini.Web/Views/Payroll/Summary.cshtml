@@ -1,0 +1,64 @@
+<!-- ErpMini.Web/Views/Payroll/Summary.cshtml -->
+@model IEnumerable<ErpMini.Application.DTOs.PayrollSummaryDto>
+@{ ViewData["Title"] = "Payroll Summary"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="page-header-title">Payroll Summary</p>
+        <p class="page-header-sub">Month-wise salary overview</p>
+    </div>
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Sheet
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th class="text-end">Employees</th>
+                    <th class="text-end">Total Basic</th>
+                    <th class="text-end">Total Bonus</th>
+                    <th class="text-end">Total Deduction</th>
+                    <th class="text-end">Net Payable</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td class="fw-medium">@s.MonthName</td>
+                    <td class="text-end">@s.TotalEmployees</td>
+                    <td class="text-end">৳ @s.TotalBasic.ToString("N0")</td>
+                    <td class="text-end text-success">৳ @s.TotalBonus.ToString("N0")</td>
+                    <td class="text-end text-danger">৳ @s.TotalDeduction.ToString("N0")</td>
+                    <td class="text-end fw-semibold">৳ @s.TotalNet.ToString("N0")</td>
+                </tr>
+            }
+            </tbody>
+            @if (Model.Any())
+            {
+                <tfoot style="border-top:2px solid #e5e9ef">
+                    <tr>
+                        <td class="fw-bold">Total</td>
+                        <td class="text-end fw-bold">@Model.Sum(s => s.TotalEmployees)</td>
+                        <td class="text-end fw-bold">৳ @Model.Sum(s => s.TotalBasic).ToString("N0")</td>
+                        <td class="text-end fw-bold text-success">৳ @Model.Sum(s => s.TotalBonus).ToString("N0")</td>
+                        <td class="text-end fw-bold text-danger">৳ @Model.Sum(s => s.TotalDeduction).ToString("N0")</td>
+                        <td class="text-end fw-bold">৳ @Model.Sum(s => s.TotalNet).ToString("N0")</td>
+                    </tr>
+                </tfoot>
+            }
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-bar-chart" style="font-size:2rem"></i>
+                <p class="mt-2">No payroll data yet.</p>
+            </div>
+        }
+    </div>
+</div>

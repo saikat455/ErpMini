@@ -1,0 +1,164 @@
+<!-- ErpMini.Web/Views/Payroll/Index.cshtml -->
+@model ErpMini.Web.ViewModels.PayrollFilterViewModel
+@{ ViewData["Title"] = "Salary Sheet"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="page-header-title">Salary Sheet</p>
+        <p class="page-header-sub">Monthly payroll records</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Generate" class="btn btn-dark btn-sm px-3">
+            <i class="bi bi-plus-lg me-1"></i> Generate
+        </a>
+        <a asp-action="Summary" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-bar-chart me-1"></i> Summary
+        </a>
+    </div>
+</div>
+
+<!-- Filter bar -->
+<div class="card mb-4">
+    <div class="card-body py-3">
+        <form asp-action="Index" method="get" class="d-flex align-items-end gap-3 flex-wrap">
+            <div>
+                <label class="form-label fw-medium mb-1" style="font-size:.8rem">Month</label>
+                <select name="month" asp-items="Model.Months" class="form-select form-select-sm"
+                        style="min-width:130px"></select>
+            </div>
+            <div>
+                <label class="form-label fw-medium mb-1" style="font-size:.8rem">Year</label>
+                <select name="year" asp-items="Model.Years" class="form-select form-select-sm"
+                        style="min-width:90px"></select>
+            </div>
+            <button type="submit" class="btn btn-dark btn-sm px-3">
+                <i class="bi bi-search me-1"></i> Filter
+            </button>
+
+            <!-- Bulk generate for selected month -->
+            <form asp-action="BulkGenerate" method="post" class="mb-0 ms-auto">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="month" value="@Model.Month" />
+                <input type="hidden" name="year" value="@Model.Year" />
+                <button type="submit" class="btn btn-sm btn-outline-primary"
+                        onclick="return confirm('Generate payroll for ALL active employees for @(new DateTime(Model.Year, Model.Month, 1).ToString("MMMM yyyy"))?')">
+                    <i class="bi bi-lightning me-1"></i> Bulk Generate
+                </button>
+            </form>
+        </form>
+    </div>
+</div>
+
+<!-- Stats row -->
+@if (Model.Payrolls.Any())
+{
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card text-center p-3">
+                <div class="text-muted" style="font-size:.75rem">Employees</div>
+                <div class="fw-semibold fs-5">@Model.Payrolls.Count()</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center p-3">
+                <div class="text-muted" style="font-size:.75rem">Total Basic</div>
+                <div class="fw-semibold fs-5">৳ @Model.Payrolls.Sum(p => p.BasicSalary).ToString("N0")</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center p-3">
+                <div class="text-muted" style="font-size:.75rem">Total Bonus</div>
+                <div class="fw-semibold fs-5 text-success">৳ @Model.Payrolls.Sum(p => p.Bonus).ToString("N0")</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center p-3">
+                <div class="text-muted" style="font-size:.75rem">Net Payable</div>
+                <div class="fw-semibold fs-5 text-dark">৳ @Model.Payrolls.Sum(p => p.NetSalary).ToString("N0")</div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Basic</th>
+                    <th>Bonus</th>
+                    <th>Deduction</th>
+                    <th>Net Salary</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in Model.Payrolls)
+            {
+                <tr>
+                    <td>
+                        <div class="fw-medium">@p.EmployeeName</div>
+                        <small class="text-muted">@p.EmployeeCode</small>
+                    </td>
+                    <td>@p.DepartmentName</td>
+                    <td>৳ @p.BasicSalary.ToString("N0")</td>
+                    <td class="text-success">
+                        @(p.Bonus > 0 ? $"৳ {p.Bonus:N0}" : "—")
+                    </td>
+                    <td class="text-danger">
+                        @(p.Deduction > 0 ? $"৳ {p.Deduction:N0}" : "—")
+                    </td>
+                    <td class="fw-semibold">৳ @p.NetSalary.ToString("N0")</td>
+                    <td>
+                        @{
+                            var sc = p.Status == ErpMini.Domain.Enums.PayrollStatus.Paid
+                                ? "badge-active"
+                                : p.Status == ErpMini.Domain.Enums.PayrollStatus.Cancelled
+                                    ? "badge-inactive" : "badge-pending";
+                        }
+                        <span class="badge @sc">@p.StatusLabel</span>
+                    </td>
+                    <td class="text-end pe-3">
+                        <a asp-action="Payslip" asp-route-id="@p.Id"
+                           class="btn btn-sm btn-outline-secondary me-1" title="Payslip">
+                            <i class="bi bi-receipt"></i>
+                        </a>
+                        @if (p.Status == ErpMini.Domain.Enums.PayrollStatus.Generated)
+                        {
+                            <form asp-action="MarkAsPaid" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <input type="hidden" name="month" value="@Model.Month" />
+                                <input type="hidden" name="year" value="@Model.Year" />
+                                <button class="btn btn-sm btn-outline-success me-1" title="Mark Paid">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            </form>
+                        }
+                        <form asp-action="Delete" asp-route-id="@p.Id"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Delete this payroll entry?')">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        @if (!Model.Payrolls.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-cash-stack" style="font-size:2rem"></i>
+                <p class="mt-2 mb-3">No payroll records for this month.</p>
+                <a asp-action="Generate" class="btn btn-sm btn-dark">Generate Payroll</a>
+            </div>
+        }
+    </div>
+</div>
