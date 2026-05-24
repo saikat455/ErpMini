@@ -1,0 +1,95 @@
+<!-- ErpMini.Web/Views/PurchaseOrder/Index.cshtml -->
+@model IEnumerable<ErpMini.Application.DTOs.PurchaseOrderDto>
+@{ ViewData["Title"] = "Purchase Orders"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="page-header-title">Purchase Orders</p>
+        <p class="page-header-sub">Manage all procurement orders</p>
+    </div>
+    <a asp-action="Create" class="btn btn-dark btn-sm px-3">
+        <i class="bi bi-plus-lg me-1"></i> New Order
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+            <input type="text" id="searchInput" class="form-control form-control-sm"
+                   placeholder="Search by PO number, vendor..."
+                   style="max-width:280px">
+        </div>
+        <table class="table table-hover mb-0" id="poTable">
+            <thead>
+                <tr>
+                    <th>PO Number</th>
+                    <th>Vendor</th>
+                    <th>Order Date</th>
+                    <th>Expected</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var o in Model)
+            {
+                <tr>
+                    <td><code class="text-secondary">@o.PoNumber</code></td>
+                    <td class="fw-medium">@o.VendorName</td>
+                    <td>@o.OrderDate.ToString("dd MMM yyyy")</td>
+                    <td>@(o.ExpectedDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                    <td><span class="badge bg-light text-dark border">@o.Items.Count</span></td>
+                    <td class="fw-medium">৳ @o.TotalAmount.ToString("N0")</td>
+                    <td>
+                        @{
+                            var sc = o.Status switch {
+                                ErpMini.Domain.Enums.PurchaseOrderStatus.Approved => "badge-active",
+                                ErpMini.Domain.Enums.PurchaseOrderStatus.Received => "bg-info-subtle text-info-emphasis",
+                                ErpMini.Domain.Enums.PurchaseOrderStatus.Cancelled => "badge-inactive",
+                                ErpMini.Domain.Enums.PurchaseOrderStatus.Submitted => "badge-pending",
+                                _ => "bg-light text-dark border"
+                            };
+                        }
+                        <span class="badge @sc">@o.StatusLabel</span>
+                    </td>
+                    <td class="text-end pe-3">
+                        <a asp-action="Details" asp-route-id="@o.Id"
+                           class="btn btn-sm btn-outline-secondary me-1">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@o.Id"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Delete @o.PoNumber?')">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-cart3" style="font-size:2rem"></i>
+                <p class="mt-2 mb-3">No purchase orders yet.</p>
+                <a asp-action="Create" class="btn btn-sm btn-dark">Create First Order</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+        const val = this.value.toLowerCase();
+        document.querySelectorAll('#poTable tbody tr').forEach(r => {
+            r.style.display = r.textContent.toLowerCase().includes(val) ? '' : 'none';
+        });
+    });
+</script>
+}

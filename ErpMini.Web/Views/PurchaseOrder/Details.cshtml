@@ -1,0 +1,160 @@
+<!-- ErpMini.Web/Views/PurchaseOrder/Details.cshtml -->
+@model ErpMini.Application.DTOs.PurchaseOrderDto
+@{ ViewData["Title"] = "Order Details"; }
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div class="flex-grow-1">
+        <p class="page-header-title">@Model.PoNumber</p>
+        <p class="page-header-sub">@Model.VendorName &nbsp;·&nbsp; @Model.OrderDate.ToString("dd MMM yyyy")</p>
+    </div>
+    <!-- Status action buttons -->
+    <div class="d-flex gap-2">
+        @if (Model.Status == ErpMini.Domain.Enums.PurchaseOrderStatus.Draft)
+        {
+            <form asp-action="Submit" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-send me-1"></i>Submit
+                </button>
+            </form>
+        }
+        @if (Model.Status == ErpMini.Domain.Enums.PurchaseOrderStatus.Submitted)
+        {
+            <form asp-action="Approve" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-success">
+                    <i class="bi bi-check-lg me-1"></i>Approve
+                </button>
+            </form>
+        }
+        @if (Model.Status == ErpMini.Domain.Enums.PurchaseOrderStatus.Approved)
+        {
+            <form asp-action="Receive" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-info">
+                    <i class="bi bi-box-seam me-1"></i>Mark Received
+                </button>
+            </form>
+        }
+        @if (Model.Status != ErpMini.Domain.Enums.PurchaseOrderStatus.Received &&
+             Model.Status != ErpMini.Domain.Enums.PurchaseOrderStatus.Cancelled)
+        {
+            <form asp-action="Cancel" asp-route-id="@Model.Id" method="post"
+                  onsubmit="return confirm('Cancel this order?')">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-x-circle me-1"></i>Cancel
+                </button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">Order Information</div>
+            <div class="card-body p-0">
+                <table class="table table-borderless mb-0" style="font-size:.875rem">
+                    <tr>
+                        <td class="text-muted ps-4 py-2" style="width:45%">PO Number</td>
+                        <td class="py-2"><code>@Model.PoNumber</code></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Vendor</td>
+                        <td class="fw-medium py-2">@Model.VendorName</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Order Date</td>
+                        <td class="py-2">@Model.OrderDate.ToString("dd MMM yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Expected</td>
+                        <td class="py-2">@(Model.ExpectedDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Status</td>
+                        <td class="py-2">
+                            @{
+                                var sc = Model.Status switch {
+                                    ErpMini.Domain.Enums.PurchaseOrderStatus.Approved => "badge-active",
+                                    ErpMini.Domain.Enums.PurchaseOrderStatus.Received => "bg-info-subtle text-info-emphasis",
+                                    ErpMini.Domain.Enums.PurchaseOrderStatus.Cancelled => "badge-inactive",
+                                    ErpMini.Domain.Enums.PurchaseOrderStatus.Submitted => "badge-pending",
+                                    _ => "bg-light text-dark border"
+                                };
+                            }
+                            <span class="badge @sc">@Model.StatusLabel</span>
+                        </td>
+                    </tr>
+                    @if (Model.ApprovedBy != null)
+                    {
+                        <tr>
+                            <td class="text-muted ps-4 py-2">Approved By</td>
+                            <td class="py-2">@Model.ApprovedBy</td>
+                        </tr>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <tr>
+                            <td class="text-muted ps-4 py-2">Notes</td>
+                            <td class="py-2">@Model.Notes</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">Order Items</div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Description</th>
+                            <th class="text-end">Qty</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Total</th>
+                            <th>Received</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td class="fw-medium">@item.ItemName</td>
+                            <td class="text-muted">@(item.Description ?? "—")</td>
+                            <td class="text-end">@item.Quantity</td>
+                            <td class="text-end">৳ @item.UnitPrice.ToString("N2")</td>
+                            <td class="text-end">৳ @item.TotalPrice.ToString("N2")</td>
+                            <td>
+                                @if (item.IsReceived)
+                                {
+                                    <span class="badge badge-active">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-dark border">No</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                    <tfoot>
+                        <tr style="border-top:2px solid #e5e9ef">
+                            <td colspan="4" class="text-end fw-bold">Grand Total</td>
+                            <td class="text-end fw-bold">৳ @Model.TotalAmount.ToString("N2")</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

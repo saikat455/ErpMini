@@ -1,0 +1,125 @@
+<!-- ErpMini.Web/Views/Accounts/Index.cshtml -->
+@model ErpMini.Web.ViewModels.TransactionFilterViewModel
+@{ ViewData["Title"] = "Transactions"; }
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="text-muted mb-1" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">
+                Total Income
+            </div>
+            <div class="fw-bold fs-5 text-success">৳ @Model.TotalIncome.ToString("N0")</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="text-muted mb-1" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">
+                Total Expense
+            </div>
+            <div class="fw-bold fs-5 text-danger">৳ @Model.TotalExpense.ToString("N0")</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="text-muted mb-1" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">
+                Net Balance
+            </div>
+            <div class="fw-bold fs-5 @(Model.Balance >= 0 ? "text-dark" : "text-danger")">
+                ৳ @Model.Balance.ToString("N0")
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Header + Actions -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <p class="page-header-title">Transaction History</p>
+        <p class="page-header-sub">All income and expense entries</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="AddIncome" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-plus-circle me-1"></i> Add Income
+        </a>
+        <a asp-action="AddExpense" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-dash-circle me-1"></i> Add Expense
+        </a>
+    </div>
+</div>
+
+<!-- Type filter tabs -->
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-sm @(Model.TypeFilter == null ? "btn-dark" : "btn-outline-secondary")">
+        All
+    </a>
+    <a asp-action="Index" asp-route-typeFilter="Income"
+       class="btn btn-sm @(Model.TypeFilter == "Income" ? "btn-success" : "btn-outline-success") ms-1">
+        Income
+    </a>
+    <a asp-action="Index" asp-route-typeFilter="Expense"
+       class="btn btn-sm @(Model.TypeFilter == "Expense" ? "btn-danger" : "btn-outline-danger") ms-1">
+        Expense
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Ref No</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th class="text-end">Amount</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var t in Model.Transactions)
+            {
+                <tr>
+                    <td><code class="text-secondary">@t.ReferenceNo</code></td>
+                    <td>@t.TransactionDate.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <span class="badge @(t.Type == ErpMini.Domain.Enums.TransactionType.Income ? "badge-active" : "badge-inactive")">
+                            @t.TypeLabel
+                        </span>
+                    </td>
+                    <td>@t.CategoryName</td>
+                    <td>
+                        <div>@t.Description</div>
+                        @if (!string.IsNullOrEmpty(t.Note))
+                        {
+                            <small class="text-muted">@t.Note</small>
+                        }
+                    </td>
+                    <td class="text-end fw-medium @(t.Type == ErpMini.Domain.Enums.TransactionType.Income ? "text-success" : "text-danger")">
+                        @(t.Type == ErpMini.Domain.Enums.TransactionType.Income ? "+" : "-")৳ @t.Amount.ToString("N0")
+                    </td>
+                    <td class="text-end pe-3">
+                        <form asp-action="Delete" asp-route-id="@t.Id"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Delete @t.ReferenceNo?')">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        @if (!Model.Transactions.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-journal-text" style="font-size:2rem"></i>
+                <p class="mt-2 mb-0">No transactions found.</p>
+            </div>
+        }
+    </div>
+</div>

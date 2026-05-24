@@ -17,113 +17,153 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ErpMini.Web
 build_property.RootNamespace = ErpMini.Web
-build_property.ProjectDir = C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Web\
+build_property.ProjectDir = D:\Dev\ErpMini\ErpMini.Web\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\saika\OneDrive\Documents\ErpMini\ErpMini.Web
+build_property.MSBuildProjectDirectory = D:\Dev\ErpMini\ErpMini.Web
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Account/Login.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Accounts/AddExpense.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudHNcQWRkRXhwZW5zZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/Accounts/AddIncome.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudHNcQWRkSW5jb21lLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/Accounts/Categories.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudHNcQ2F0ZWdvcmllcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/Accounts/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudHNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/Accounts/Ledger.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudHNcTGVkZ2VyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/Accounts/Summary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudHNcU3VtbWFyeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Account/Register.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Dashboard/Index.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Dashboard/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Department/Index.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Department/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwYXJ0bWVudFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Designation/Index.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Designation/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVzaWduYXRpb25cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Employee/Create.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Employee/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Employee/Details.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Employee/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Employee/Edit.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Employee/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Employee/Index.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Employee/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Home/Index.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Home/Privacy.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Leave/Apply.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Leave/Apply.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcQXBwbHkuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Leave/Balance.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Leave/Balance.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcQmFsYW5jZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Leave/Index.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Leave/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Leave/LeaveTypes.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Leave/LeaveTypes.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcTGVhdmVUeXBlcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Leave/Pending.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Leave/Pending.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcUGVuZGluZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Payroll/Generate.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Payroll/Generate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxHZW5lcmF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Payroll/Index.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Payroll/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Payroll/Payslip.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Payroll/Payslip.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxQYXlzbGlwLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Payroll/Summary.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Payroll/Summary.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxTdW1tYXJ5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Shared/Error.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/PurchaseOrder/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVyY2hhc2VPcmRlclxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/PurchaseOrder/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVyY2hhc2VPcmRlclxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/PurchaseOrder/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVyY2hhc2VPcmRlclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/_ViewImports.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Vendor/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/ErpMini/ErpMini.Web/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/_ViewStart.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/saika/OneDrive/Documents/ErpMini/ErpMini.Web/Views/Shared/_Layout.cshtml]
+[D:/Dev/ErpMini/ErpMini.Web/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-ti29zphier

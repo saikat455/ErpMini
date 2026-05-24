@@ -40,6 +40,8 @@ try
     builder.Services.AddScoped<ILeaveService, LeaveService>();
 builder.Services.AddScoped<IPayrollService, PayrollService>();
     builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IProcurementService, ProcurementService>();
+builder.Services.AddScoped<IAccountsService, AccountsService>();
 
     var app = builder.Build();
 

@@ -1,0 +1,70 @@
+<!-- ErpMini.Web/Views/Accounts/AddIncome.cshtml -->
+@model ErpMini.Web.ViewModels.CreateTransactionViewModel
+@{ ViewData["Title"] = "Add Income"; }
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+        <p class="page-header-title">Add Income</p>
+        <p class="page-header-sub">Record a new income entry</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">Income Details</div>
+            <div class="card-body">
+                <form asp-action="AddIncome" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label asp-for="CategoryId" class="form-label fw-medium"></label>
+                        <select asp-for="CategoryId" asp-items="Model.Categories"
+                                class="form-select">
+                            <option value="">— Select Category —</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Amount" class="form-label fw-medium"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">৳</span>
+                            <input asp-for="Amount" type="number" step="0.01"
+                                   class="form-control" placeholder="0.00" />
+                        </div>
+                        <span asp-validation-for="Amount" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="TransactionDate" class="form-label fw-medium"></label>
+                        <input asp-for="TransactionDate" type="date" class="form-control"
+                               value="@Model.TransactionDate.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="TransactionDate" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-medium"></label>
+                        <input asp-for="Description" class="form-control"
+                               placeholder="Brief description" />
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Note" class="form-label fw-medium"></label>
+                        <textarea asp-for="Note" class="form-control" rows="2"
+                                  placeholder="Optional additional notes"></textarea>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-plus-circle me-1"></i> Add Income
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

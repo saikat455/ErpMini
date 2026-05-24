@@ -16,6 +16,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 public DbSet<LeaveType> LeaveTypes => Set<LeaveType>();
 public DbSet<LeaveApplication> LeaveApplications => Set<LeaveApplication>();
 public DbSet<Payroll> Payrolls => Set<Payroll>();
+public DbSet<Vendor> Vendors => Set<Vendor>();
+public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
+public DbSet<PurchaseOrderItem> PurchaseOrderItems => Set<PurchaseOrderItem>();
+public DbSet<AccountCategory> AccountCategories => Set<AccountCategory>();
+public DbSet<Transaction> Transactions => Set<Transaction>();
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -30,7 +36,27 @@ public DbSet<Payroll> Payrolls => Set<Payroll>();
         builder.Entity<Designation>().HasQueryFilter(d => !d.IsDeleted);
         builder.Entity<LeaveType>().HasQueryFilter(l => !l.IsDeleted);
 builder.Entity<LeaveApplication>().HasQueryFilter(l => !l.IsDeleted);
+// Add inside OnModelCreating
+builder.Entity<Vendor>().HasQueryFilter(v => !v.IsDeleted);
+builder.Entity<PurchaseOrder>().HasQueryFilter(p => !p.IsDeleted);
+builder.Entity<PurchaseOrderItem>().HasQueryFilter(p => !p.IsDeleted);
 
+builder.Entity<PurchaseOrder>()
+    .HasOne(p => p.Vendor)
+    .WithMany(v => v.PurchaseOrders)
+    .HasForeignKey(p => p.VendorId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+builder.Entity<PurchaseOrderItem>()
+    .HasOne(i => i.PurchaseOrder)
+    .WithMany(p => p.Items)
+    .HasForeignKey(i => i.PurchaseOrderId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+// TotalPrice is computed — not stored in DB
+builder.Entity<PurchaseOrderItem>()
+    .Ignore(i => i.TotalPrice);
+    
         // Relationships
         builder.Entity<Employee>()
             .HasOne(e => e.Department)
@@ -89,5 +115,22 @@ builder.Entity<LeaveType>().HasData(
     new LeaveType { Id = 3, Name = "Casual Leave", TotalDays = 10, Description = "Short personal leave", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
 );
 
+builder.Entity<AccountCategory>().HasQueryFilter(a => !a.IsDeleted);
+builder.Entity<Transaction>().HasQueryFilter(t => !t.IsDeleted);
+
+builder.Entity<Transaction>()
+    .HasOne(t => t.Category)
+    .WithMany(c => c.Transactions)
+    .HasForeignKey(t => t.CategoryId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+// Seed categories
+builder.Entity<AccountCategory>().HasData(
+    new AccountCategory { Id = 1, Name = "Sales Revenue", Type = "Income", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+    new AccountCategory { Id = 2, Name = "Service Income", Type = "Income", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+    new AccountCategory { Id = 3, Name = "Office Rent", Type = "Expense", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+    new AccountCategory { Id = 4, Name = "Utilities", Type = "Expense", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+    new AccountCategory { Id = 5, Name = "Salaries", Type = "Expense", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+);
     }
 }

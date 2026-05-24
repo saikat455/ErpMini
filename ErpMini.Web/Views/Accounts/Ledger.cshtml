@@ -1,0 +1,95 @@
+<!-- ErpMini.Web/Views/Accounts/Ledger.cshtml -->
+@model ErpMini.Web.ViewModels.LedgerFilterViewModel
+@{ ViewData["Title"] = "Ledger"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="page-header-title">General Ledger</p>
+        <p class="page-header-sub">Running balance of all transactions</p>
+    </div>
+</div>
+
+<!-- Date filter -->
+<div class="card mb-4">
+    <div class="card-body py-3">
+        <form asp-action="Ledger" method="get"
+              class="d-flex align-items-end gap-3 flex-wrap">
+            <div>
+                <label class="form-label fw-medium mb-1" style="font-size:.8rem">From</label>
+                <input type="date" name="from" class="form-control form-control-sm"
+                       value="@Model.From?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div>
+                <label class="form-label fw-medium mb-1" style="font-size:.8rem">To</label>
+                <input type="date" name="to" class="form-control form-control-sm"
+                       value="@Model.To?.ToString("yyyy-MM-dd")" />
+            </div>
+            <button type="submit" class="btn btn-dark btn-sm px-3">
+                <i class="bi bi-search me-1"></i> Filter
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Ref No</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th class="text-end text-success">Income</th>
+                    <th class="text-end text-danger">Expense</th>
+                    <th class="text-end">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var e in Model.Entries)
+            {
+                <tr>
+                    <td><code class="text-secondary">@e.ReferenceNo</code></td>
+                    <td>@e.TransactionDate.ToString("dd MMM yyyy")</td>
+                    <td>@e.Description</td>
+                    <td>@e.CategoryName</td>
+                    <td class="text-end text-success">
+                        @(e.Income > 0 ? $"৳ {e.Income:N0}" : "—")
+                    </td>
+                    <td class="text-end text-danger">
+                        @(e.Expense > 0 ? $"৳ {e.Expense:N0}" : "—")
+                    </td>
+                    <td class="text-end fw-semibold @(e.Balance >= 0 ? "" : "text-danger")">
+                        ৳ @e.Balance.ToString("N0")
+                    </td>
+                </tr>
+            }
+            </tbody>
+            @if (Model.Entries.Any())
+            {
+                <tfoot style="border-top:2px solid #e5e9ef">
+                    <tr>
+                        <td colspan="4" class="text-end fw-bold">Total</td>
+                        <td class="text-end fw-bold text-success">
+                            ৳ @Model.Entries.Sum(e => e.Income).ToString("N0")
+                        </td>
+                        <td class="text-end fw-bold text-danger">
+                            ৳ @Model.Entries.Sum(e => e.Expense).ToString("N0")
+                        </td>
+                        <td class="text-end fw-bold">
+                            ৳ @Model.Entries.LastOrDefault()?.Balance.ToString("N0")
+                        </td>
+                    </tr>
+                </tfoot>
+            }
+        </table>
+
+        @if (!Model.Entries.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-journal-bookmark" style="font-size:2rem"></i>
+                <p class="mt-2 mb-0">No transactions in this period.</p>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,63 @@
+<!-- ErpMini.Web/Views/Accounts/Summary.cshtml -->
+@model IEnumerable<ErpMini.Application.DTOs.FinancialSummaryDto>
+@{ ViewData["Title"] = "Financial Summary"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="page-header-title">Financial Summary</p>
+        <p class="page-header-sub">Month-wise income vs expense overview</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th class="text-end">Total Income</th>
+                    <th class="text-end">Total Expense</th>
+                    <th class="text-end">Net Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td class="fw-medium">@s.MonthName</td>
+                    <td class="text-end text-success">৳ @s.TotalIncome.ToString("N0")</td>
+                    <td class="text-end text-danger">৳ @s.TotalExpense.ToString("N0")</td>
+                    <td class="text-end fw-semibold @(s.NetBalance >= 0 ? "" : "text-danger")">
+                        ৳ @s.NetBalance.ToString("N0")
+                    </td>
+                </tr>
+            }
+            </tbody>
+            @if (Model.Any())
+            {
+                <tfoot style="border-top:2px solid #e5e9ef">
+                    <tr>
+                        <td class="fw-bold">Grand Total</td>
+                        <td class="text-end fw-bold text-success">
+                            ৳ @Model.Sum(s => s.TotalIncome).ToString("N0")
+                        </td>
+                        <td class="text-end fw-bold text-danger">
+                            ৳ @Model.Sum(s => s.TotalExpense).ToString("N0")
+                        </td>
+                        <td class="text-end fw-bold">
+                            ৳ @((Model.Sum(s => s.TotalIncome) - Model.Sum(s => s.TotalExpense)).ToString("N0"))
+                        </td>
+                    </tr>
+                </tfoot>
+            }
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-bar-chart-line" style="font-size:2rem"></i>
+                <p class="mt-2 mb-0">No financial data yet.</p>
+            </div>
+        }
+    </div>
+</div>

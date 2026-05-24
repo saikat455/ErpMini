@@ -1,0 +1,146 @@
+<!-- ErpMini.Web/Views/PurchaseOrder/Create.cshtml -->
+@model ErpMini.Web.ViewModels.CreatePurchaseOrderViewModel
+@{ ViewData["Title"] = "New Purchase Order"; }
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+        <p class="page-header-title">New Purchase Order</p>
+        <p class="page-header-sub">Fill order details and add items</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post" id="poForm">
+    @Html.AntiForgeryToken()
+    <div class="row g-4">
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">Order Details</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="VendorId" class="form-label fw-medium"></label>
+                        <select asp-for="VendorId" asp-items="Model.Vendors"
+                                class="form-select">
+                            <option value="">— Select Vendor —</option>
+                        </select>
+                        <span asp-validation-for="VendorId" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OrderDate" class="form-label fw-medium"></label>
+                        <input asp-for="OrderDate" type="date" class="form-control"
+                               value="@Model.OrderDate.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ExpectedDate" class="form-label fw-medium"></label>
+                        <input asp-for="ExpectedDate" type="date" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label fw-medium"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="2"
+                                  placeholder="Optional notes"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Order Items</span>
+                    <button type="button" class="btn btn-sm btn-outline-dark"
+                            onclick="addRow()">
+                        <i class="bi bi-plus me-1"></i> Add Item
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table mb-0" id="itemTable">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Description</th>
+                                <th style="width:80px">Qty</th>
+                                <th style="width:120px">Unit Price</th>
+                                <th style="width:120px">Total</th>
+                                <th style="width:40px"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemBody">
+                            <!-- rows added by JS -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end fw-semibold pe-3">
+                                    Grand Total
+                                </td>
+                                <td class="fw-bold" id="grandTotal">৳ 0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-3">
+                <button type="submit" class="btn btn-dark">
+                    <i class="bi bi-check-lg me-1"></i> Create Purchase Order
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+<script>
+    // Add one empty row on load
+    document.addEventListener('DOMContentLoaded', () => addRow());
+
+    function addRow() {
+        const body = document.getElementById('itemBody');
+        const idx = body.rows.length;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input name="itemNames" class="form-control form-control-sm"
+                       placeholder="Item name" required onchange="calcRow(this)"/></td>
+            <td><input name="itemDescriptions" class="form-control form-control-sm"
+                       placeholder="Optional"/></td>
+            <td><input name="quantities" type="number" min="1" value="1"
+                       class="form-control form-control-sm" onchange="calcRow(this)"/></td>
+            <td><input name="unitPrices" type="number" step="0.01" min="0" value="0"
+                       class="form-control form-control-sm" onchange="calcRow(this)"/></td>
+            <td class="row-total fw-medium" style="vertical-align:middle">৳ 0.00</td>
+            <td><button type="button" class="btn btn-sm btn-outline-danger"
+                        onclick="removeRow(this)"><i class="bi bi-x"></i></button></td>`;
+        body.appendChild(tr);
+    }
+
+    function removeRow(btn) {
+        btn.closest('tr').remove();
+        updateGrandTotal();
+    }
+
+    function calcRow(input) {
+        const row = input.closest('tr');
+        const qty = parseFloat(row.querySelector('[name=quantities]').value) || 0;
+        const price = parseFloat(row.querySelector('[name=unitPrices]').value) || 0;
+        row.querySelector('.row-total').textContent =
+            '৳ ' + (qty * price).toLocaleString('en-US', {minimumFractionDigits: 2});
+        updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+        let total = 0;
+        document.querySelectorAll('#itemBody tr').forEach(row => {
+            const qty = parseFloat(row.querySelector('[name=quantities]')?.value) || 0;
+            const price = parseFloat(row.querySelector('[name=unitPrices]')?.value) || 0;
+            total += qty * price;
+        });
+        document.getElementById('grandTotal').textContent =
+            '৳ ' + total.toLocaleString('en-US', {minimumFractionDigits: 2});
+    }
+</script>
+}

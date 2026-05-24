@@ -9,56 +9,132 @@
     <style>
         * { box-sizing: border-box; }
         body { background: #f4f6f9; font-size: 0.875rem; margin: 0; }
+
         .sidebar {
-            width: 220px; min-height: 100vh; background: #1e2a3a;
-            color: #adb5bd; position: fixed; top: 0; left: 0;
-            z-index: 100; display: flex; flex-direction: column; overflow-y: auto;
+            width: 220px;
+            height: 100vh;              /* fixed height = full viewport */
+            background: #1e2a3a;
+            color: #adb5bd;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;           /* hide overflow on the outer container */
         }
+
         .sidebar-brand {
-            padding: 1.1rem 1.25rem; font-size: 1rem; font-weight: 600;
-            color: #fff; border-bottom: 1px solid #2d3f54; letter-spacing: .02em;
+            flex-shrink: 0;             /* never compress the brand */
+            padding: 1.1rem 1.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            border-bottom: 1px solid #2d3f54;
+            letter-spacing: .02em;
         }
+
+        .sidebar-nav {
+            flex: 1;                    /* takes remaining height */
+            overflow-y: auto;           /* scroll happens HERE not on sidebar */
+            overflow-x: hidden;
+            padding-bottom: 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: #3d5166 transparent;
+        }
+
+        /* Webkit scrollbar */
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: #3d5166;
+            border-radius: 4px;
+        }
+        .sidebar-nav::-webkit-scrollbar-thumb:hover { background: #4e6580; }
+
         .sidebar .nav-link {
-            color: #9ca3af; padding: .5rem 1.25rem; display: flex;
-            align-items: center; gap: .55rem; font-size: .82rem; border-radius: 0;
+            color: #9ca3af;
+            padding: .5rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            font-size: .82rem;
+            border-radius: 0;
+            white-space: nowrap;
         }
         .sidebar .nav-link:hover { color: #fff; background: #253447; }
         .sidebar .nav-link.active { color: #fff; background: #2d3f54; }
+
         .nav-section {
-            font-size: .68rem; font-weight: 600; letter-spacing: .09em;
-            color: #4a5a6a; padding: 1rem 1.25rem .3rem; text-transform: uppercase;
+            font-size: .68rem;
+            font-weight: 600;
+            letter-spacing: .09em;
+            color: #4a5a6a;
+            padding: 1rem 1.25rem .3rem;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
-        .main-content { margin-left: 220px; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .main-content {
+            margin-left: 220px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
         .topbar {
-            background: #fff; border-bottom: 1px solid #e5e9ef;
-            padding: .7rem 1.5rem; display: flex; align-items: center;
-            justify-content: space-between; position: sticky; top: 0; z-index: 50;
+            background: #fff;
+            border-bottom: 1px solid #e5e9ef;
+            padding: .7rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
+
         .page-content { padding: 1.5rem; flex: 1; }
+
         .card { border: 1px solid #e5e9ef; border-radius: 8px; box-shadow: none; background: #fff; }
         .card-header {
-            background: #fff; border-bottom: 1px solid #e5e9ef;
-            font-weight: 600; padding: .8rem 1.25rem; font-size: .875rem;
+            background: #fff;
+            border-bottom: 1px solid #e5e9ef;
+            font-weight: 600;
+            padding: .8rem 1.25rem;
+            font-size: .875rem;
         }
+
         .table th {
             font-size: .72rem; font-weight: 600; text-transform: uppercase;
-            letter-spacing: .05em; color: #6b7280; border-bottom: 2px solid #e5e9ef;
+            letter-spacing: .05em; color: #6b7280;
+            border-bottom: 2px solid #e5e9ef;
             padding: .75rem 1rem; background: #fafafa;
         }
-        .table td { padding: .75rem 1rem; vertical-align: middle; color: #374151; border-bottom: 1px solid #f3f4f6; }
+        .table td {
+            padding: .75rem 1rem; vertical-align: middle;
+            color: #374151; border-bottom: 1px solid #f3f4f6;
+        }
         .table tbody tr:last-child td { border-bottom: none; }
         .table-hover tbody tr:hover td { background: #f9fafb; }
-        .badge-active { background: #d1fae5; color: #065f46; font-weight: 500; font-size: .75rem; padding: .25rem .6rem; border-radius: 20px; }
+
+        .badge-active   { background: #d1fae5; color: #065f46; font-weight: 500; font-size: .75rem; padding: .25rem .6rem; border-radius: 20px; }
         .badge-inactive { background: #fee2e2; color: #991b1b; font-weight: 500; font-size: .75rem; padding: .25rem .6rem; border-radius: 20px; }
-        .badge-pending { background: #fef3c7; color: #92400e; font-weight: 500; font-size: .75rem; padding: .25rem .6rem; border-radius: 20px; }
+        .badge-pending  { background: #fef3c7; color: #92400e; font-weight: 500; font-size: .75rem; padding: .25rem .6rem; border-radius: 20px; }
+
         .btn-dark { background: #1e2a3a; border-color: #1e2a3a; }
         .btn-dark:hover { background: #253447; border-color: #253447; }
+
         .form-control, .form-select { font-size: .875rem; }
-        .form-control:focus, .form-select:focus { border-color: #1e2a3a; box-shadow: 0 0 0 .2rem rgba(30,42,58,.15); }
+        .form-control:focus, .form-select:focus {
+            border-color: #1e2a3a;
+            box-shadow: 0 0 0 .2rem rgba(30,42,58,.15);
+        }
+
         .alert { font-size: .875rem; border-radius: 6px; }
         .modal-content { border-radius: 10px; border: 1px solid #e5e9ef; }
         .page-header-title { font-size: 1rem; font-weight: 600; color: #111; margin: 0; }
-        .page-header-sub { font-size: .78rem; color: #6b7280; margin: 0; }
+        .page-header-sub   { font-size: .78rem; color: #6b7280; margin: 0; }
     </style>
 </head>
 <body>
@@ -67,59 +143,101 @@
     <div class="sidebar-brand">
         <i class="bi bi-grid-3x3-gap-fill me-2"></i>ERP Mini
     </div>
-    <nav class="nav flex-column pt-1 flex-grow-1">
-        <div class="nav-section">Main</div>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
-           asp-controller="Dashboard" asp-action="Index">
-            <i class="bi bi-speedometer2"></i> Dashboard
-        </a>
 
-        <div class="nav-section">Human Resources</div>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Employee" ? "active" : "")"
-           asp-controller="Employee" asp-action="Index">
-            <i class="bi bi-people"></i> Employees
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Department" ? "active" : "")"
-           asp-controller="Department" asp-action="Index">
-            <i class="bi bi-diagram-3"></i> Departments
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Designation" ? "active" : "")"
-           asp-controller="Designation" asp-action="Index">
-            <i class="bi bi-person-badge"></i> Designations
-        </a>
+    <!-- scroll wrapper — only this scrolls, brand stays pinned -->
+    <div class="sidebar-nav">
+        <nav class="nav flex-column pt-1">
 
-        <div class="nav-section">Leave</div>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Leave" && ViewContext.RouteData.Values["action"]?.ToString() == "Pending" ? "active" : "")"
-           asp-controller="Leave" asp-action="Pending">
-            <i class="bi bi-hourglass-split"></i> Pending Approvals
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Leave" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
-           asp-controller="Leave" asp-action="Index">
-            <i class="bi bi-calendar2-check"></i> All Leaves
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Leave" && ViewContext.RouteData.Values["action"]?.ToString() == "Apply" ? "active" : "")"
-           asp-controller="Leave" asp-action="Apply">
-            <i class="bi bi-calendar2-plus"></i> Apply Leave
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Leave" && ViewContext.RouteData.Values["action"]?.ToString() == "LeaveTypes" ? "active" : "")"
-           asp-controller="Leave" asp-action="LeaveTypes">
-            <i class="bi bi-list-check"></i> Leave Types
-        </a>
+            <div class="nav-section">Main</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+               asp-controller="Dashboard" asp-action="Index">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
 
-        <div class="nav-section">Payroll</div>
-<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payroll" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
-   asp-controller="Payroll" asp-action="Index">
-    <i class="bi bi-cash-stack"></i> Salary Sheet
+            <div class="nav-section">Human Resources</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Employee" ? "active" : "")"
+               asp-controller="Employee" asp-action="Index">
+                <i class="bi bi-people"></i> Employees
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Department" ? "active" : "")"
+               asp-controller="Department" asp-action="Index">
+                <i class="bi bi-diagram-3"></i> Departments
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Designation" ? "active" : "")"
+               asp-controller="Designation" asp-action="Index">
+                <i class="bi bi-person-badge"></i> Designations
+            </a>
+
+            <div class="nav-section">Leave</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Leave" && ViewContext.RouteData.Values["action"]?.ToString() == "Pending" ? "active" : "")"
+               asp-controller="Leave" asp-action="Pending">
+                <i class="bi bi-hourglass-split"></i> Pending Approvals
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Leave" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+               asp-controller="Leave" asp-action="Index">
+                <i class="bi bi-calendar2-check"></i> All Leaves
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Leave" && ViewContext.RouteData.Values["action"]?.ToString() == "Apply" ? "active" : "")"
+               asp-controller="Leave" asp-action="Apply">
+                <i class="bi bi-calendar2-plus"></i> Apply Leave
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Leave" && ViewContext.RouteData.Values["action"]?.ToString() == "LeaveTypes" ? "active" : "")"
+               asp-controller="Leave" asp-action="LeaveTypes">
+                <i class="bi bi-list-check"></i> Leave Types
+            </a>
+
+            <div class="nav-section">Payroll</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payroll" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+               asp-controller="Payroll" asp-action="Index">
+                <i class="bi bi-cash-stack"></i> Salary Sheet
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payroll" && ViewContext.RouteData.Values["action"]?.ToString() == "Generate" ? "active" : "")"
+               asp-controller="Payroll" asp-action="Generate">
+                <i class="bi bi-plus-circle"></i> Generate
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payroll" && ViewContext.RouteData.Values["action"]?.ToString() == "Summary" ? "active" : "")"
+               asp-controller="Payroll" asp-action="Summary">
+                <i class="bi bi-bar-chart"></i> Summary
+            </a>
+
+            <div class="nav-section">Procurement</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "PurchaseOrder" ? "active" : "")"
+               asp-controller="PurchaseOrder" asp-action="Index">
+                <i class="bi bi-cart3"></i> Purchase Orders
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Vendor" ? "active" : "")"
+               asp-controller="Vendor" asp-action="Index">
+                <i class="bi bi-building"></i> Vendors
+            </a>
+
+            <div class="nav-section">Accounts</div>
+<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+   asp-controller="Accounts" asp-action="Index">
+    <i class="bi bi-journal-text"></i> Transactions
 </a>
-<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payroll" && ViewContext.RouteData.Values["action"]?.ToString() == "Generate" ? "active" : "")"
-   asp-controller="Payroll" asp-action="Generate">
-    <i class="bi bi-plus-circle"></i> Generate
+<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" && ViewContext.RouteData.Values["action"]?.ToString() == "AddIncome" ? "active" : "")"
+   asp-controller="Accounts" asp-action="AddIncome">
+    <i class="bi bi-plus-circle"></i> Add Income
 </a>
-<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payroll" && ViewContext.RouteData.Values["action"]?.ToString() == "Summary" ? "active" : "")"
-   asp-controller="Payroll" asp-action="Summary">
-    <i class="bi bi-bar-chart"></i> Summary
+<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" && ViewContext.RouteData.Values["action"]?.ToString() == "AddExpense" ? "active" : "")"
+   asp-controller="Accounts" asp-action="AddExpense">
+    <i class="bi bi-dash-circle"></i> Add Expense
 </a>
-    </nav>
+<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" && ViewContext.RouteData.Values["action"]?.ToString() == "Ledger" ? "active" : "")"
+   asp-controller="Accounts" asp-action="Ledger">
+    <i class="bi bi-journal-bookmark"></i> Ledger
+</a>
+<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" && ViewContext.RouteData.Values["action"]?.ToString() == "Summary" ? "active" : "")"
+   asp-controller="Accounts" asp-action="Summary">
+    <i class="bi bi-bar-chart-line"></i> Summary
+</a>
+<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" && ViewContext.RouteData.Values["action"]?.ToString() == "Categories" ? "active" : "")"
+   asp-controller="Accounts" asp-action="Categories">
+    <i class="bi bi-tags"></i> Categories
+</a>
+
+        </nav>
+    </div>
 </div>
 
 <div class="main-content">
