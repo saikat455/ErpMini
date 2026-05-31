@@ -1,0 +1,90 @@
+<!-- ErpMini.Web/Views/Company/Settings.cshtml -->
+@model ErpMini.Domain.Entities.Company
+@{ ViewData["Title"] = "Company Settings"; }
+
+<div class="mb-4">
+    <p class="page-header-title">Company Settings</p>
+    <p class="page-header-sub">Manage your company details and code</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card mb-4">
+            <div class="card-header">Company Code</div>
+            <div class="card-body">
+                <p class="text-muted mb-3" style="font-size:.83rem">
+                    Share this code with employees so they can register
+                    and join your company.
+                </p>
+                <div class="text-center py-4 rounded mb-4"
+                     style="background:#f0f4f8;border:2px dashed #cbd5e1">
+                    <div class="text-muted mb-1"
+                         style="font-size:.7rem;letter-spacing:.1em">
+                        YOUR COMPANY CODE
+                    </div>
+                    <div style="font-size:2.2rem;font-weight:800;
+                                letter-spacing:.25em;color:#1e2a3a">
+                        @Model.CompanyCode
+                    </div>
+                </div>
+
+                <form asp-action="UpdateCode" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="companyId" value="@Model.Id" />
+                    <label class="form-label fw-medium"
+                           style="font-size:.875rem">Change Code</label>
+                    <div class="input-group">
+                        <input type="text" name="newCode"
+                               class="form-control fw-semibold"
+                               style="text-transform:uppercase;letter-spacing:.1em"
+                               value="@Model.CompanyCode"
+                               maxlength="12" required />
+                        <button type="submit" class="btn btn-dark">
+                            Update
+                        </button>
+                    </div>
+                    <div class="form-text">Max 12 characters, letters and numbers.</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card mb-4">
+            <div class="card-header">Company Overview</div>
+            <div class="card-body p-0">
+                <table class="table table-borderless mb-0"
+                       style="font-size:.875rem">
+                    <tr>
+                        <td class="text-muted ps-4 py-2" style="width:40%">
+                            Company Name
+                        </td>
+                        <td class="fw-medium py-2">@Model.Name</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Company Code</td>
+                        <td class="py-2"><code>@Model.CompanyCode</code></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Total Employees</td>
+                        <td class="py-2">@Model.Employees.Count(e => !e.IsDeleted)</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Departments</td>
+                        <td class="py-2">@Model.Departments.Count(d => !d.IsDeleted)</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Status</td>
+                        <td class="py-2">
+                            <span class="badge badge-active">Active</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-4 py-2">Created</td>
+                        <td class="py-2">@Model.CreatedAt.ToString("dd MMM yyyy")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

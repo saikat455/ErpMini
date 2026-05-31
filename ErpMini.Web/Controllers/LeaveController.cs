@@ -27,7 +27,7 @@ public class LeaveController : Controller
         return View(leaves);
     }
 
-    // Admin: pending only
+   [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> Pending()
     {
         var leaves = await _leaveService.GetPendingAsync();
@@ -71,6 +71,7 @@ public class LeaveController : Controller
     }
 
     [HttpPost]
+     [Authorize(Roles = "Admin,HR")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(int id)
     {
@@ -81,6 +82,7 @@ public class LeaveController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,HR")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(RejectLeaveViewModel vm)
     {

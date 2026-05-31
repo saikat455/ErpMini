@@ -5,10 +5,11 @@ using ErpMini.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ErpMini.Application.Helpers;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin,HR")]
 public class EmployeeController : Controller
 {
     private readonly IEmployeeService _employeeService;
@@ -22,11 +23,25 @@ public class EmployeeController : Controller
         _designationService = desig;
     }
 
-    public async Task<IActionResult> Index()
+
+public async Task<IActionResult> Index(int page = 1, string? search = null)
+{
+    var employees = await _employeeService.GetAllAsync();
+
+    if (!string.IsNullOrWhiteSpace(search))
     {
-        var employees = await _employeeService.GetAllAsync();
-        return View(employees);
+        search = search.ToLower();
+        employees = employees.Where(e =>
+            e.FullName.ToLower().Contains(search) ||
+            e.EmployeeCode.ToLower().Contains(search) ||
+            e.DepartmentName.ToLower().Contains(search) ||
+            e.Email.ToLower().Contains(search));
     }
+
+    var paged = PagedList<EmployeeDto>.Create(employees, page, pageSize: 10);
+    ViewBag.Search = search;
+    return View(paged);
+}
 
     public async Task<IActionResult> Create()
     {

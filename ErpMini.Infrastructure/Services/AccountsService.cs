@@ -13,31 +13,35 @@ public class AccountsService : IAccountsService
     private readonly AppDbContext _context;
     public AccountsService(AppDbContext context) => _context = context;
 
-    public async Task<IEnumerable<TransactionDto>> GetAllAsync()
+    public async Task<IEnumerable<TransactionDto>> GetAllAsync(int companyId)
     {
         return await _context.Transactions
             .Include(t => t.Category)
+            .Where(t => t.CompanyId == companyId)
             .OrderByDescending(t => t.TransactionDate)
             .Select(t => MapToDto(t))
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<TransactionDto>> GetByTypeAsync(TransactionType type)
+    public async Task<IEnumerable<TransactionDto>> GetByTypeAsync(
+        TransactionType type, int companyId)
     {
         return await _context.Transactions
             .Include(t => t.Category)
-            .Where(t => t.Type == type)
+            .Where(t => t.CompanyId == companyId && t.Type == type)
             .OrderByDescending(t => t.TransactionDate)
             .Select(t => MapToDto(t))
             .ToListAsync();
     }
 
     public async Task<IEnumerable<TransactionDto>> GetByDateRangeAsync(
-        DateTime from, DateTime to)
+        DateTime from, DateTime to, int companyId)
     {
         return await _context.Transactions
             .Include(t => t.Category)
-            .Where(t => t.TransactionDate >= from && t.TransactionDate <= to)
+            .Where(t => t.CompanyId == companyId
+                     && t.TransactionDate >= from
+                     && t.TransactionDate <= to)
             .OrderByDescending(t => t.TransactionDate)
             .Select(t => MapToDto(t))
             .ToListAsync();
@@ -47,34 +51,38 @@ public class AccountsService : IAccountsService
     {
         var txn = new Transaction
         {
-            ReferenceNo = await GenerateReferenceNoAsync(),
-            CategoryId = dto.CategoryId,
-            Type = dto.Type,
-            Amount = dto.Amount,
+            ReferenceNo     = await GenerateReferenceNoAsync(dto.CompanyId),
+            CategoryId      = dto.CategoryId,
+            CompanyId       = dto.CompanyId,
+            Type            = dto.Type,
+            Amount          = dto.Amount,
             TransactionDate = DateTime.SpecifyKind(dto.TransactionDate, DateTimeKind.Utc),
-            Description = dto.Description,
-            Note = dto.Note,
-            CreatedByUser = dto.CreatedByUser,
-            CreatedAt = DateTime.UtcNow
+            Description     = dto.Description,
+            Note            = dto.Note,
+            CreatedByUser   = dto.CreatedByUser,
+            CreatedAt       = DateTime.UtcNow
         };
 
         await _context.Transactions.AddAsync(txn);
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id, int companyId)
     {
-        var txn = await _context.Transactions.FindAsync(id);
+        var txn = await _context.Transactions
+            .FirstOrDefaultAsync(t => t.Id == id && t.CompanyId == companyId);
+
         if (txn is null) return false;
         txn.IsDeleted = true;
         txn.UpdatedAt = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<string> GenerateReferenceNoAsync()
+    public async Task<string> GenerateReferenceNoAsync(int companyId)
     {
         var last = await _context.Transactions
             .IgnoreQueryFilters()
+            .Where(t => t.CompanyId == companyId)
             .OrderByDescending(t => t.Id)
             .Select(t => t.ReferenceNo)
             .FirstOrDefaultAsync();
@@ -85,10 +93,11 @@ public class AccountsService : IAccountsService
     }
 
     public async Task<IEnumerable<LedgerDto>> GetLedgerAsync(
-        DateTime? from, DateTime? to)
+        DateTime? from, DateTime? to, int companyId)
     {
         var query = _context.Transactions
             .Include(t => t.Category)
+            .Where(t => t.CompanyId == companyId)
             .AsQueryable();
 
         if (from.HasValue)
@@ -113,62 +122,63 @@ public class AccountsService : IAccountsService
 
             ledger.Add(new LedgerDto
             {
-                ReferenceNo = t.ReferenceNo,
+                ReferenceNo     = t.ReferenceNo,
                 TransactionDate = t.TransactionDate,
-                Description = t.Description,
-                CategoryName = t.Category.Name,
-                Income = t.Type == TransactionType.Income ? t.Amount : 0,
-                Expense = t.Type == TransactionType.Expense ? t.Amount : 0,
-                Balance = running
+                Description     = t.Description,
+                CategoryName    = t.Category.Name,
+                Income          = t.Type == TransactionType.Income  ? t.Amount : 0,
+                Expense         = t.Type == TransactionType.Expense ? t.Amount : 0,
+                Balance         = running
             });
         }
 
         return ledger;
     }
 
-    public async Task<IEnumerable<FinancialSummaryDto>> GetMonthlySummaryAsync()
+    public async Task<IEnumerable<FinancialSummaryDto>> GetMonthlySummaryAsync(int companyId)
     {
-        var data = await _context.Transactions
+        return await _context.Transactions
+            .Where(t => t.CompanyId == companyId)
             .GroupBy(t => new { t.TransactionDate.Year, t.TransactionDate.Month })
             .Select(g => new FinancialSummaryDto
             {
-                Year = g.Key.Year,
-                Month = g.Key.Month,
-                TotalIncome = g.Where(t => t.Type == TransactionType.Income)
-                               .Sum(t => t.Amount),
+                Year         = g.Key.Year,
+                Month        = g.Key.Month,
+                TotalIncome  = g.Where(t => t.Type == TransactionType.Income)
+                                .Sum(t => t.Amount),
                 TotalExpense = g.Where(t => t.Type == TransactionType.Expense)
                                 .Sum(t => t.Amount)
             })
             .OrderByDescending(s => s.Year)
             .ThenByDescending(s => s.Month)
             .ToListAsync();
-
-        return data;
     }
 
-    public async Task<(decimal income, decimal expense, decimal balance)> GetTotalsAsync()
+    public async Task<(decimal income, decimal expense, decimal balance)> GetTotalsAsync(
+        int companyId)
     {
         var income = await _context.Transactions
-            .Where(t => t.Type == TransactionType.Income)
+            .Where(t => t.CompanyId == companyId && t.Type == TransactionType.Income)
             .SumAsync(t => t.Amount);
 
         var expense = await _context.Transactions
-            .Where(t => t.Type == TransactionType.Expense)
+            .Where(t => t.CompanyId == companyId && t.Type == TransactionType.Expense)
             .SumAsync(t => t.Amount);
 
         return (income, expense, income - expense);
     }
 
+    // ── Categories are global (not company-scoped) ────────────────────────────
     public async Task<IEnumerable<AccountCategoryDto>> GetCategoriesAsync()
     {
         return await _context.AccountCategories
             .Select(c => new AccountCategoryDto
             {
-                Id = c.Id,
-                Name = c.Name,
-                Type = c.Type,
-                Description = c.Description,
-                IsActive = c.IsActive,
+                Id               = c.Id,
+                Name             = c.Name,
+                Type             = c.Type,
+                Description      = c.Description,
+                IsActive         = c.IsActive,
                 TransactionCount = c.Transactions.Count(t => !t.IsDeleted)
             })
             .ToListAsync();
@@ -179,9 +189,10 @@ public class AccountsService : IAccountsService
     {
         await _context.AccountCategories.AddAsync(new AccountCategory
         {
-            Name = name, Type = type,
+            Name        = name,
+            Type        = type,
             Description = description,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt   = DateTime.UtcNow
         });
         return await _context.SaveChangesAsync() > 0;
     }
@@ -190,22 +201,23 @@ public class AccountsService : IAccountsService
     {
         var c = await _context.AccountCategories.FindAsync(id);
         if (c is null) return false;
-        c.IsDeleted = true; c.UpdatedAt = DateTime.UtcNow;
+        c.IsDeleted = true;
+        c.UpdatedAt = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
 
     private static TransactionDto MapToDto(Transaction t) => new()
     {
-        Id = t.Id,
-        ReferenceNo = t.ReferenceNo,
-        CategoryId = t.CategoryId,
-        CategoryName = t.Category.Name,
-        Type = t.Type,
-        Amount = t.Amount,
+        Id              = t.Id,
+        ReferenceNo     = t.ReferenceNo,
+        CategoryId      = t.CategoryId,
+        CategoryName    = t.Category.Name,
+        Type            = t.Type,
+        Amount          = t.Amount,
         TransactionDate = t.TransactionDate,
-        Description = t.Description,
-        Note = t.Note,
-        CreatedByUser = t.CreatedByUser,
-        CreatedAt = t.CreatedAt
+        Description     = t.Description,
+        Note            = t.Note,
+        CreatedByUser   = t.CreatedByUser,
+        CreatedAt       = t.CreatedAt
     };
 }

@@ -12,37 +12,54 @@ public class DesignationService : IDesignationService
     private readonly AppDbContext _context;
     public DesignationService(AppDbContext context) => _context = context;
 
-    public async Task<IEnumerable<DesignationDto>> GetAllAsync()
+    public async Task<IEnumerable<DesignationDto>> GetAllAsync(int companyId)
     {
         return await _context.Designations
+            .Where(d => d.CompanyId == companyId)
             .Select(d => new DesignationDto
             {
-                Id = d.Id,
-                Title = d.Title,
+                Id          = d.Id,
+                Title       = d.Title,
                 Description = d.Description,
-                IsActive = d.IsActive
-            }).ToListAsync();
+                IsActive    = d.IsActive
+            })
+            .ToListAsync();
     }
 
-    public async Task<bool> CreateAsync(string title, string? description)
+    public async Task<bool> CreateAsync(string title, string? description, int companyId)
     {
-        await _context.Designations.AddAsync(new Designation { Title = title, Description = description, CreatedAt = DateTime.UtcNow });
+        await _context.Designations.AddAsync(new Designation
+        {
+            Title       = title,
+            Description = description,
+            CompanyId   = companyId,
+            CreatedAt   = DateTime.UtcNow
+        });
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> UpdateAsync(int id, string title, string? description)
+    public async Task<bool> UpdateAsync(int id, string title, string? description, int companyId)
     {
-        var d = await _context.Designations.FindAsync(id);
+        var d = await _context.Designations
+            .FirstOrDefaultAsync(d => d.Id == id && d.CompanyId == companyId);
+
         if (d is null) return false;
-        d.Title = title; d.Description = description; d.UpdatedAt = DateTime.UtcNow;
+
+        d.Title       = title;
+        d.Description = description;
+        d.UpdatedAt   = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id, int companyId)
     {
-        var d = await _context.Designations.FindAsync(id);
+        var d = await _context.Designations
+            .FirstOrDefaultAsync(d => d.Id == id && d.CompanyId == companyId);
+
         if (d is null) return false;
-        d.IsDeleted = true; d.UpdatedAt = DateTime.UtcNow;
+
+        d.IsDeleted = true;
+        d.UpdatedAt = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
 }

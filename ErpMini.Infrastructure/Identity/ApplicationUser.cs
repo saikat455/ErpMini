@@ -9,4 +9,6 @@ public class ApplicationUser : IdentityUser
     public string? ProfileImagePath { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;
+    public int? CompanyId { get; set; }
+    public string Role { get; set; } = "Employee";
 }

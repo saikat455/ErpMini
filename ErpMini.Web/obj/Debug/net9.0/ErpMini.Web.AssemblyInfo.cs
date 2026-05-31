@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ErpMini.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+866aab17194712b36b79d5c03d8ca6d86b86357a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("ErpMini.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ErpMini.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

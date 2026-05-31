@@ -6,20 +6,20 @@ namespace ErpMini.Application.Interfaces;
 public interface IProcurementService
 {
     // Vendors
-    Task<IEnumerable<VendorDto>> GetAllVendorsAsync();
-    Task<VendorDto?> GetVendorByIdAsync(int id);
-    Task<bool> CreateVendorAsync(VendorDto dto);
-    Task<bool> UpdateVendorAsync(VendorDto dto);
-    Task<bool> DeleteVendorAsync(int id);
+    Task<IEnumerable<VendorDto>> GetAllVendorsAsync(int companyId);
+    Task<VendorDto?> GetVendorByIdAsync(int id, int companyId);
+    Task<bool> CreateVendorAsync(VendorDto dto, int companyId);
+    Task<bool> UpdateVendorAsync(VendorDto dto, int companyId);
+    Task<bool> DeleteVendorAsync(int id, int companyId);
 
     // Purchase Orders
-    Task<IEnumerable<PurchaseOrderDto>> GetAllOrdersAsync();
-    Task<PurchaseOrderDto?> GetOrderByIdAsync(int id);
-    Task<bool> CreateOrderAsync(CreatePurchaseOrderDto dto);
-    Task<bool> SubmitOrderAsync(int id);
-    Task<bool> ApproveOrderAsync(int id, string approvedBy);
-    Task<bool> ReceiveOrderAsync(int id);
-    Task<bool> CancelOrderAsync(int id);
-    Task<bool> DeleteOrderAsync(int id);
-    Task<string> GeneratePoNumberAsync();
+    Task<IEnumerable<PurchaseOrderDto>> GetAllOrdersAsync(int companyId);
+    Task<PurchaseOrderDto?> GetOrderByIdAsync(int id, int companyId);
+    Task<bool> CreateOrderAsync(CreatePurchaseOrderDto dto);       // dto carries CompanyId
+    Task<bool> SubmitOrderAsync(int id, int companyId);
+    Task<bool> ApproveOrderAsync(int id, string approvedBy, int companyId);
+    Task<bool> ReceiveOrderAsync(int id, int companyId);
+    Task<bool> CancelOrderAsync(int id, int companyId);
+    Task<bool> DeleteOrderAsync(int id, int companyId);
+    Task<string> GeneratePoNumberAsync(int companyId);
 }

@@ -6,17 +6,17 @@ namespace ErpMini.Application.Interfaces;
 public interface ILeaveService
 {
     // Employee actions
-    Task<IEnumerable<LeaveApplicationDto>> GetByEmployeeAsync(int employeeId);
+    Task<IEnumerable<LeaveApplicationDto>> GetByEmployeeAsync(int employeeId, int companyId);
     Task<bool> ApplyAsync(CreateLeaveDto dto);
-    Task<IEnumerable<LeaveBalanceDto>> GetBalanceAsync(int employeeId);
+    Task<IEnumerable<LeaveBalanceDto>> GetBalanceAsync(int employeeId, int companyId);
 
     // Admin actions
-    Task<IEnumerable<LeaveApplicationDto>> GetAllAsync();
-    Task<IEnumerable<LeaveApplicationDto>> GetPendingAsync();
-    Task<bool> ApproveAsync(int id, string actionBy);
-    Task<bool> RejectAsync(int id, string reason, string actionBy);
+    Task<IEnumerable<LeaveApplicationDto>> GetAllAsync(int companyId);
+    Task<IEnumerable<LeaveApplicationDto>> GetPendingAsync(int companyId);
+    Task<bool> ApproveAsync(int id, string actionBy, int companyId);
+    Task<bool> RejectAsync(int id, string reason, string actionBy, int companyId);
 
-    // Leave types
+    // Leave types (global — not company-scoped)
     Task<IEnumerable<LeaveTypeDto>> GetLeaveTypesAsync();
     Task<bool> CreateLeaveTypeAsync(string name, int days, string? description);
     Task<bool> DeleteLeaveTypeAsync(int id);

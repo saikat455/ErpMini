@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Dev\\ErpMini\\ErpMini.Infrastructure\\ErpMini.Infrastructure.csproj": {}
+    "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Infrastructure\\ErpMini.Infrastructure.csproj": {}
   },
   "projects": {
-    "D:\\Dev\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj": {
+    "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dev\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj",
+        "projectUniqueName": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj",
         "projectName": "ErpMini.Application",
-        "projectPath": "D:\\Dev\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj",
-        "packagesPath": "C:\\Users\\one\\.nuget\\packages\\",
-        "outputPath": "D:\\Dev\\ErpMini\\ErpMini.Application\\obj\\",
+        "projectPath": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj",
+        "packagesPath": "C:\\Users\\saika\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\one\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\saika\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -32,8 +32,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\Dev\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj": {
-                "projectPath": "D:\\Dev\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj"
+              "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj": {
+                "projectPath": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj"
               }
             }
           }
@@ -48,7 +48,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -69,24 +69,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Dev\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj": {
+    "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dev\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj",
         "projectName": "ErpMini.Domain",
-        "projectPath": "D:\\Dev\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj",
-        "packagesPath": "C:\\Users\\one\\.nuget\\packages\\",
-        "outputPath": "D:\\Dev\\ErpMini\\ErpMini.Domain\\obj\\",
+        "projectPath": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Domain\\ErpMini.Domain.csproj",
+        "packagesPath": "C:\\Users\\saika\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\one\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\saika\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -113,7 +113,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -134,24 +134,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Dev\\ErpMini\\ErpMini.Infrastructure\\ErpMini.Infrastructure.csproj": {
+    "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Infrastructure\\ErpMini.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dev\\ErpMini\\ErpMini.Infrastructure\\ErpMini.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Infrastructure\\ErpMini.Infrastructure.csproj",
         "projectName": "ErpMini.Infrastructure",
-        "projectPath": "D:\\Dev\\ErpMini\\ErpMini.Infrastructure\\ErpMini.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\one\\.nuget\\packages\\",
-        "outputPath": "D:\\Dev\\ErpMini\\ErpMini.Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Infrastructure\\ErpMini.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\saika\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\one\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\saika\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -166,8 +166,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\Dev\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj": {
-                "projectPath": "D:\\Dev\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj"
+              "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj": {
+                "projectPath": "C:\\Users\\saika\\OneDrive\\Documents\\ErpMini\\ErpMini.Application\\ErpMini.Application.csproj"
               }
             }
           }
@@ -182,7 +182,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -223,7 +223,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

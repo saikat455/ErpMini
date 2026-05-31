@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin,Finance")]
 public class AccountsController : Controller
 {
     private readonly IAccountsService _service;

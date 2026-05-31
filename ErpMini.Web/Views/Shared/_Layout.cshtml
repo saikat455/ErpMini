@@ -236,20 +236,38 @@
     <i class="bi bi-tags"></i> Categories
 </a>
 
+<div class="nav-section">System</div>
+<a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" ? "active" : "")"
+   asp-controller="UserManagement" asp-action="Index">
+    <i class="bi bi-shield-lock"></i> User Management
+</a>
+
         </nav>
     </div>
 </div>
 
 <div class="main-content">
     <div class="topbar">
-        <span style="font-weight:600; color:#111; font-size:.9rem">@ViewData["Title"]</span>
-        <form asp-controller="Account" asp-action="Logout" method="post" class="mb-0">
+    <span style="font-weight:600;color:#111;font-size:.9rem">
+        @ViewData["Title"]
+    </span>
+    <div class="d-flex align-items-center gap-2">
+        <span class="text-muted" style="font-size:.8rem">
+            @User.Identity?.Name
+        </span>
+        <a asp-controller="Account" asp-action="ChangePassword"
+           class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-key me-1"></i>Password
+        </a>
+        <form asp-controller="Account" asp-action="Logout"
+              method="post" class="mb-0">
             @Html.AntiForgeryToken()
             <button type="submit" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-box-arrow-right me-1"></i>Logout
             </button>
         </form>
     </div>
+</div>
 
     <div class="page-content">
         @if (TempData["Success"] != null)

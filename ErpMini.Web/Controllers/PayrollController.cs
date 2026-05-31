@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin,Finance")]
 public class PayrollController : Controller
 {
     private readonly IPayrollService _payrollService;

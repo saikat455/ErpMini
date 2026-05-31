@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class VendorController : Controller
 {
     private readonly IProcurementService _service;

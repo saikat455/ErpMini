@@ -14,33 +14,37 @@ public class LeaveService : ILeaveService
 
     public LeaveService(AppDbContext context) => _context = context;
 
-    public async Task<IEnumerable<LeaveApplicationDto>> GetAllAsync()
+    public async Task<IEnumerable<LeaveApplicationDto>> GetAllAsync(int companyId)
     {
         return await _context.LeaveApplications
             .Include(l => l.Employee).ThenInclude(e => e.Department)
             .Include(l => l.LeaveType)
+            .Where(l => l.Employee.CompanyId == companyId)
             .OrderByDescending(l => l.CreatedAt)
             .Select(l => MapToDto(l))
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<LeaveApplicationDto>> GetPendingAsync()
+    public async Task<IEnumerable<LeaveApplicationDto>> GetPendingAsync(int companyId)
     {
         return await _context.LeaveApplications
             .Include(l => l.Employee).ThenInclude(e => e.Department)
             .Include(l => l.LeaveType)
-            .Where(l => l.Status == LeaveStatus.Pending)
+            .Where(l => l.Employee.CompanyId == companyId
+                     && l.Status == LeaveStatus.Pending)
             .OrderBy(l => l.CreatedAt)
             .Select(l => MapToDto(l))
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<LeaveApplicationDto>> GetByEmployeeAsync(int employeeId)
+    public async Task<IEnumerable<LeaveApplicationDto>> GetByEmployeeAsync(
+        int employeeId, int companyId)
     {
         return await _context.LeaveApplications
             .Include(l => l.Employee)
             .Include(l => l.LeaveType)
-            .Where(l => l.EmployeeId == employeeId)
+            .Where(l => l.EmployeeId == employeeId
+                     && l.Employee.CompanyId == companyId)
             .OrderByDescending(l => l.CreatedAt)
             .Select(l => MapToDto(l))
             .ToListAsync();
@@ -48,60 +52,76 @@ public class LeaveService : ILeaveService
 
     public async Task<bool> ApplyAsync(CreateLeaveDto dto)
     {
-        // Calculate working days (simple version — excludes weekends)
+        // Calculate working days (excludes weekends)
         var totalDays = 0;
         for (var date = dto.FromDate; date <= dto.ToDate; date = date.AddDays(1))
         {
-            if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+            if (date.DayOfWeek != DayOfWeek.Saturday &&
+                date.DayOfWeek != DayOfWeek.Sunday)
                 totalDays++;
         }
 
         var application = new LeaveApplication
         {
-            EmployeeId = dto.EmployeeId,
+            EmployeeId  = dto.EmployeeId,
             LeaveTypeId = dto.LeaveTypeId,
-            FromDate = dto.FromDate,
-            ToDate = dto.ToDate,
-            TotalDays = totalDays,
-            Reason = dto.Reason,
-            Status = LeaveStatus.Pending,
-            CreatedAt = DateTime.UtcNow
+            FromDate    = dto.FromDate,
+            ToDate      = dto.ToDate,
+            TotalDays   = totalDays,
+            Reason      = dto.Reason,
+            Status      = LeaveStatus.Pending,
+            CreatedAt   = DateTime.UtcNow
         };
 
         await _context.LeaveApplications.AddAsync(application);
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> ApproveAsync(int id, string actionBy)
+    public async Task<bool> ApproveAsync(int id, string actionBy, int companyId)
     {
-        var leave = await _context.LeaveApplications.FindAsync(id);
+        var leave = await _context.LeaveApplications
+            .Include(l => l.Employee)
+            .FirstOrDefaultAsync(l => l.Id == id
+                                   && l.Employee.CompanyId == companyId);
+
         if (leave is null || leave.Status != LeaveStatus.Pending) return false;
 
-        leave.Status = LeaveStatus.Approved;
-        leave.ActionBy = actionBy;
+        leave.Status     = LeaveStatus.Approved;
+        leave.ActionBy   = actionBy;
         leave.ActionDate = DateTime.UtcNow;
-        leave.UpdatedAt = DateTime.UtcNow;
+        leave.UpdatedAt  = DateTime.UtcNow;
 
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> RejectAsync(int id, string reason, string actionBy)
+    public async Task<bool> RejectAsync(int id, string reason, string actionBy, int companyId)
     {
-        var leave = await _context.LeaveApplications.FindAsync(id);
+        var leave = await _context.LeaveApplications
+            .Include(l => l.Employee)
+            .FirstOrDefaultAsync(l => l.Id == id
+                                   && l.Employee.CompanyId == companyId);
+
         if (leave is null || leave.Status != LeaveStatus.Pending) return false;
 
-        leave.Status = LeaveStatus.Rejected;
+        leave.Status          = LeaveStatus.Rejected;
         leave.RejectionReason = reason;
-        leave.ActionBy = actionBy;
-        leave.ActionDate = DateTime.UtcNow;
-        leave.UpdatedAt = DateTime.UtcNow;
+        leave.ActionBy        = actionBy;
+        leave.ActionDate      = DateTime.UtcNow;
+        leave.UpdatedAt       = DateTime.UtcNow;
 
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<IEnumerable<LeaveBalanceDto>> GetBalanceAsync(int employeeId)
+    public async Task<IEnumerable<LeaveBalanceDto>> GetBalanceAsync(
+        int employeeId, int companyId)
     {
-        var leaveTypes = await _context.LeaveTypes.ToListAsync();
+        // Verify the employee belongs to this company
+        var employeeExists = await _context.Employees
+            .AnyAsync(e => e.Id == employeeId && e.CompanyId == companyId);
+
+        if (!employeeExists) return Enumerable.Empty<LeaveBalanceDto>();
+
+        var leaveTypes  = await _context.LeaveTypes.ToListAsync();
         var currentYear = DateTime.UtcNow.Year;
 
         var usedLeaves = await _context.LeaveApplications
@@ -115,28 +135,35 @@ public class LeaveService : ILeaveService
         return leaveTypes.Select(lt => new LeaveBalanceDto
         {
             LeaveTypeName = lt.Name,
-            Allocated = lt.TotalDays,
-            Used = usedLeaves.FirstOrDefault(u => u.LeaveTypeId == lt.Id)?.Used ?? 0
+            Allocated     = lt.TotalDays,
+            Used          = usedLeaves.FirstOrDefault(u => u.LeaveTypeId == lt.Id)?.Used ?? 0
         });
     }
 
+    // ── Leave Types are global (not company-scoped) ───────────────────────────
     public async Task<IEnumerable<LeaveTypeDto>> GetLeaveTypesAsync()
     {
         return await _context.LeaveTypes
             .Select(lt => new LeaveTypeDto
             {
-                Id = lt.Id, Name = lt.Name,
+                Id          = lt.Id,
+                Name        = lt.Name,
                 Description = lt.Description,
-                TotalDays = lt.TotalDays, IsActive = lt.IsActive
-            }).ToListAsync();
+                TotalDays   = lt.TotalDays,
+                IsActive    = lt.IsActive
+            })
+            .ToListAsync();
     }
 
-    public async Task<bool> CreateLeaveTypeAsync(string name, int days, string? description)
+    public async Task<bool> CreateLeaveTypeAsync(
+        string name, int days, string? description)
     {
         await _context.LeaveTypes.AddAsync(new LeaveType
         {
-            Name = name, TotalDays = days,
-            Description = description, CreatedAt = DateTime.UtcNow
+            Name        = name,
+            TotalDays   = days,
+            Description = description,
+            CreatedAt   = DateTime.UtcNow
         });
         return await _context.SaveChangesAsync() > 0;
     }
@@ -145,28 +172,28 @@ public class LeaveService : ILeaveService
     {
         var lt = await _context.LeaveTypes.FindAsync(id);
         if (lt is null) return false;
-        lt.IsDeleted = true; lt.UpdatedAt = DateTime.UtcNow;
+        lt.IsDeleted = true;
+        lt.UpdatedAt = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
 
-    // Private mapper keeps Select() expressions clean
     private static LeaveApplicationDto MapToDto(LeaveApplication l) => new()
     {
-        Id = l.Id,
-        EmployeeId = l.EmployeeId,
-        EmployeeName = $"{l.Employee.FirstName} {l.Employee.LastName}",
-        EmployeeCode = l.Employee.EmployeeCode,
+        Id             = l.Id,
+        EmployeeId     = l.EmployeeId,
+        EmployeeName   = $"{l.Employee.FirstName} {l.Employee.LastName}",
+        EmployeeCode   = l.Employee.EmployeeCode,
         DepartmentName = l.Employee.Department.Name,
-        LeaveTypeId = l.LeaveTypeId,
-        LeaveTypeName = l.LeaveType.Name,
-        FromDate = l.FromDate,
-        ToDate = l.ToDate,
-        TotalDays = l.TotalDays,
-        Reason = l.Reason,
-        Status = l.Status,
+        LeaveTypeId    = l.LeaveTypeId,
+        LeaveTypeName  = l.LeaveType.Name,
+        FromDate        = l.FromDate,
+        ToDate          = l.ToDate,
+        TotalDays       = l.TotalDays,
+        Reason          = l.Reason,
+        Status          = l.Status,
         RejectionReason = l.RejectionReason,
-        ActionDate = l.ActionDate,
-        ActionBy = l.ActionBy,
-        CreatedAt = l.CreatedAt
+        ActionDate      = l.ActionDate,
+        ActionBy        = l.ActionBy,
+        CreatedAt       = l.CreatedAt
     };
 }

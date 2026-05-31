@@ -1,9 +1,313 @@
 <!-- ErpMini.Web/Views/Dashboard/Index.cshtml -->
-@{
-    ViewData["Title"] = "Dashboard";
-}
+@model ErpMini.Application.DTOs.DashboardDto
+@{ ViewData["Title"] = "Dashboard"; }
 
-<div class="text-center py-5 text-muted">
-    <i class="bi bi-speedometer2" style="font-size:2.5rem"></i>
-    <p class="mt-2">Dashboard coming in Phase 7.</p>
+<!-- KPI Row 1 — HR & Leave -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Total Employees</div>
+                    <div class="fw-bold" style="font-size:1.5rem">@Model.TotalEmployees</div>
+                    <div class="text-muted" style="font-size:.75rem">@Model.ActiveEmployees active</div>
+                </div>
+                <div style="width:36px;height:36px;background:#e0f2fe;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-people" style="color:#0369a1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Departments</div>
+                    <div class="fw-bold" style="font-size:1.5rem">@Model.TotalDepartments</div>
+                    <div class="text-muted" style="font-size:.75rem">Active units</div>
+                </div>
+                <div style="width:36px;height:36px;background:#fce7f3;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-diagram-3" style="color:#9d174d"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Pending Leaves</div>
+                    <div class="fw-bold" style="font-size:1.5rem">@Model.PendingLeaves</div>
+                    <div class="text-muted" style="font-size:.75rem">Awaiting approval</div>
+                </div>
+                <div style="width:36px;height:36px;background:#fef3c7;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-hourglass-split" style="color:#92400e"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Payroll This Month</div>
+                    <div class="fw-bold" style="font-size:1.5rem">৳ @Model.TotalPayrollThisMonth.ToString("N0")</div>
+                    <div class="text-muted" style="font-size:.75rem">@Model.PayrollEmployeesThisMonth employees</div>
+                </div>
+                <div style="width:36px;height:36px;background:#d1fae5;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-cash-stack" style="color:#065f46"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- KPI Row 2 — Accounts & Procurement -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Total Income</div>
+                    <div class="fw-bold text-success" style="font-size:1.4rem">৳ @Model.TotalIncome.ToString("N0")</div>
+                </div>
+                <div style="width:36px;height:36px;background:#d1fae5;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-graph-up-arrow" style="color:#065f46"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Total Expense</div>
+                    <div class="fw-bold text-danger" style="font-size:1.4rem">৳ @Model.TotalExpense.ToString("N0")</div>
+                </div>
+                <div style="width:36px;height:36px;background:#fee2e2;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-graph-down-arrow" style="color:#991b1b"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Net Balance</div>
+                    <div class="fw-bold @(Model.NetBalance >= 0 ? "" : "text-danger")" style="font-size:1.4rem">
+                        ৳ @Model.NetBalance.ToString("N0")
+                    </div>
+                </div>
+                <div style="width:36px;height:36px;background:#e0f2fe;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-wallet2" style="color:#0369a1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Pending Orders</div>
+                    <div class="fw-bold" style="font-size:1.5rem">@Model.PendingOrders</div>
+                    <div class="text-muted" style="font-size:.75rem">@Model.TotalVendors vendors</div>
+                </div>
+                <div style="width:36px;height:36px;background:#ede9fe;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-cart3" style="color:#5b21b6"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Income vs Expense Chart -->
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header">Income vs Expense — Last 6 Months</div>
+            <div class="card-body">
+                <canvas id="financialChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Headcount Chart -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">Employees by Department</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="deptChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Row -->
+<div class="row g-4">
+    <!-- Recent Transactions -->
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Recent Transactions</span>
+                <a asp-controller="Accounts" asp-action="Index"
+                   class="btn btn-sm btn-outline-secondary" style="font-size:.75rem">
+                    View All
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ref</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var t in Model.RecentTransactions)
+                    {
+                        <tr>
+                            <td><code class="text-secondary" style="font-size:.78rem">@t.ReferenceNo</code></td>
+                            <td style="font-size:.85rem">@t.Description</td>
+                            <td>
+                                <span class="badge @(t.Type == "Income" ? "badge-active" : "badge-inactive")">
+                                    @t.Type
+                                </span>
+                            </td>
+                            <td class="text-end fw-medium @(t.Type == "Income" ? "text-success" : "text-danger")"
+                                style="font-size:.85rem">
+                                ৳ @t.Amount.ToString("N0")
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+                @if (!Model.RecentTransactions.Any())
+                {
+                    <div class="text-center py-4 text-muted" style="font-size:.85rem">
+                        No transactions yet.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header">Quick Actions</div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Employee" asp-action="Create"
+                       class="btn btn-outline-secondary text-start">
+                        <i class="bi bi-person-plus me-2"></i> Add New Employee
+                    </a>
+                    <a asp-controller="Leave" asp-action="Apply"
+                       class="btn btn-outline-secondary text-start">
+                        <i class="bi bi-calendar2-plus me-2"></i> Apply Leave
+                    </a>
+                    <a asp-controller="Leave" asp-action="Pending"
+                       class="btn btn-outline-secondary text-start d-flex justify-content-between">
+                        <span><i class="bi bi-hourglass-split me-2"></i> Review Pending Leaves</span>
+                        @if (Model.PendingLeaves > 0)
+                        {
+                            <span class="badge badge-pending">@Model.PendingLeaves</span>
+                        }
+                    </a>
+                    <a asp-controller="Payroll" asp-action="Generate"
+                       class="btn btn-outline-secondary text-start">
+                        <i class="bi bi-cash-stack me-2"></i> Generate Payroll
+                    </a>
+                    <a asp-controller="Accounts" asp-action="AddIncome"
+                       class="btn btn-outline-secondary text-start">
+                        <i class="bi bi-plus-circle me-2"></i> Add Income Entry
+                    </a>
+                    <a asp-controller="PurchaseOrder" asp-action="Create"
+                       class="btn btn-outline-secondary text-start">
+                        <i class="bi bi-cart-plus me-2"></i> New Purchase Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // ── Income vs Expense Bar Chart ──────────────────────────────
+    const months   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                        Model.MonthlyFinancials.Select(m => m.Month)));
+    const incomes  = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                        Model.MonthlyFinancials.Select(m => m.Income)));
+    const expenses = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                        Model.MonthlyFinancials.Select(m => m.Expense)));
+
+    new Chart(document.getElementById('financialChart'), {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomes,
+                    backgroundColor: 'rgba(16,185,129,0.7)',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Expense',
+                    data: expenses,
+                    backgroundColor: 'rgba(239,68,68,0.7)',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: v => '৳' + v.toLocaleString()
+                    }
+                }
+            }
+        }
+    });
+
+    // ── Department Doughnut Chart ────────────────────────────────
+    const deptLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                          Model.DepartmentHeadcounts.Select(d => d.Department)));
+    const deptCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                          Model.DepartmentHeadcounts.Select(d => d.Count)));
+
+    new Chart(document.getElementById('deptChart'), {
+        type: 'doughnut',
+        data: {
+            labels: deptLabels,
+            datasets: [{
+                data: deptCounts,
+                backgroundColor: [
+                    '#3b82f6','#10b981','#f59e0b',
+                    '#ef4444','#8b5cf6','#06b6d4'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { size: 11 } } }
+            },
+            cutout: '65%'
+        }
+    });
+</script>
+}
