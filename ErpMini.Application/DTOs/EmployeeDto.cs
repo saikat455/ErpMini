@@ -35,4 +35,5 @@ public class CreateEmployeeDto
     public string Gender { get; set; } = string.Empty;
     public int DepartmentId { get; set; }
     public int DesignationId { get; set; }
+    public int CompanyId { get; set; }
 }

@@ -13,8 +13,8 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Error()  => View();
-    public IActionResult NotFound() => View();
+    public IActionResult Error() => View();
+    public new IActionResult NotFound() => View();
 
     public IActionResult Index()
     {

@@ -30,7 +30,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         builder.HasDefaultSchema("erp");
         builder.Entity<ApplicationUser>().ToTable("users");
 
-        // ── Soft delete filters ──────────────────────────────────
+        // ── Soft delete filters ──────────────────────────────────────
         builder.Entity<Company>().HasQueryFilter(c => !c.IsDeleted);
         builder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted);
         builder.Entity<Department>().HasQueryFilter(d => !d.IsDeleted);
@@ -44,26 +44,75 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<AccountCategory>().HasQueryFilter(a => !a.IsDeleted);
         builder.Entity<Transaction>().HasQueryFilter(t => !t.IsDeleted);
 
-        // ── Company relationships ────────────────────────────────
+        // ── All entities → Company (CompanyId from BaseEntity) ───────
+        // Using HasOne<Company>().WithMany() for all — no nav property needed
         builder.Entity<Employee>()
-            .HasOne(e => e.Company)
-            .WithMany(c => c.Employees)
+            .HasOne<Company>()
+            .WithMany()
             .HasForeignKey(e => e.CompanyId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Department>()
-            .HasOne(d => d.Company)
-            .WithMany(c => c.Departments)
+            .HasOne<Company>()
+            .WithMany()
             .HasForeignKey(d => d.CompanyId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Designation>()
-            .HasOne(d => d.Company)
-            .WithMany(c => c.Designations)
+            .HasOne<Company>()
+            .WithMany()
             .HasForeignKey(d => d.CompanyId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ── Employee relationships ───────────────────────────────
+        builder.Entity<Vendor>()
+            .HasOne<Company>()
+            .WithMany()
+            .HasForeignKey(v => v.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<PurchaseOrder>()
+            .HasOne<Company>()
+            .WithMany()
+            .HasForeignKey(p => p.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<PurchaseOrderItem>()
+            .HasOne<Company>()
+            .WithMany()
+            .HasForeignKey(pi => pi.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Transaction>()
+            .HasOne<Company>()
+            .WithMany()
+            .HasForeignKey(t => t.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<LeaveApplication>()
+            .HasOne<Company>()
+            .WithMany()
+            .HasForeignKey(l => l.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<LeaveType>()
+            .HasOne<Company>()
+            .WithMany()
+            .HasForeignKey(l => l.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Payroll>()
+            .HasOne<Company>()
+            .WithMany()
+            .HasForeignKey(p => p.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<AccountCategory>()
+            .HasOne<Company>()
+            .WithMany()
+            .HasForeignKey(a => a.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // ── Employee relationships ───────────────────────────────────
         builder.Entity<Employee>()
             .HasOne(e => e.Department)
             .WithMany(d => d.Employees)
@@ -76,7 +125,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(e => e.DesignationId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ── Leave relationships ──────────────────────────────────
+        // ── Leave ────────────────────────────────────────────────────
         builder.Entity<LeaveApplication>()
             .HasOne(l => l.Employee)
             .WithMany()
@@ -89,7 +138,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(l => l.LeaveTypeId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ── Payroll ──────────────────────────────────────────────
+        // ── Payroll ──────────────────────────────────────────────────
         builder.Entity<Payroll>()
             .HasOne(p => p.Employee)
             .WithMany()
@@ -100,7 +149,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .HasIndex(p => new { p.EmployeeId, p.Month, p.Year })
             .IsUnique();
 
-        // ── Procurement ──────────────────────────────────────────
+        // ── Procurement ──────────────────────────────────────────────
         builder.Entity<PurchaseOrder>()
             .HasOne(p => p.Vendor)
             .WithMany(v => v.PurchaseOrders)
@@ -116,27 +165,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<PurchaseOrderItem>()
             .Ignore(i => i.TotalPrice);
 
-        // ── Accounts ─────────────────────────────────────────────
+        // ── Accounts ─────────────────────────────────────────────────
         builder.Entity<Transaction>()
             .HasOne(t => t.Category)
             .WithMany(c => c.Transactions)
             .HasForeignKey(t => t.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        // ── Seed Leave Types (global, not company-specific) ──────
-        builder.Entity<LeaveType>().HasData(
-            new LeaveType { Id = 1, Name = "Annual Leave", TotalDays = 20, IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new LeaveType { Id = 2, Name = "Sick Leave", TotalDays = 14, IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new LeaveType { Id = 3, Name = "Casual Leave", TotalDays = 10, IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
-        );
-
-        // ── Seed Account Categories (global) ─────────────────────
-        builder.Entity<AccountCategory>().HasData(
-            new AccountCategory { Id = 1, Name = "Sales Revenue", Type = "Income", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new AccountCategory { Id = 2, Name = "Service Income", Type = "Income", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new AccountCategory { Id = 3, Name = "Office Rent", Type = "Expense", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new AccountCategory { Id = 4, Name = "Utilities", Type = "Expense", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new AccountCategory { Id = 5, Name = "Salaries", Type = "Expense", IsActive = true, CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
-        );
     }
 }

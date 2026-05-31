@@ -31,6 +31,9 @@ namespace ErpMini.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -62,54 +65,60 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccountCategories", "erp");
+                    b.HasIndex("CompanyId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Sales Revenue",
-                            Type = "Income"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Service Income",
-                            Type = "Income"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Office Rent",
-                            Type = "Expense"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Utilities",
-                            Type = "Expense"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Salaries",
-                            Type = "Expense"
-                        });
+                    b.ToTable("AccountCategories", "erp");
+                });
+
+            modelBuilder.Entity("ErpMini.Domain.Entities.Company", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Companies", "erp");
                 });
 
             modelBuilder.Entity("ErpMini.Domain.Entities.Department", b =>
@@ -119,6 +128,12 @@ namespace ErpMini.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CompanyId1")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -147,36 +162,11 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments", "erp");
+                    b.HasIndex("CompanyId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "HR Department",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Human Resources"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "IT Department",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Information Technology"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Finance Department",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Finance"
-                        });
+                    b.HasIndex("CompanyId1");
+
+                    b.ToTable("Departments", "erp");
                 });
 
             modelBuilder.Entity("ErpMini.Domain.Entities.Designation", b =>
@@ -186,6 +176,12 @@ namespace ErpMini.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CompanyId1")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -214,41 +210,11 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Designations", "erp");
+                    b.HasIndex("CompanyId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Title = "Software Engineer"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Title = "Senior Engineer"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Title = "HR Manager"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Title = "Accountant"
-                        });
+                    b.HasIndex("CompanyId1");
+
+                    b.ToTable("Designations", "erp");
                 });
 
             modelBuilder.Entity("ErpMini.Domain.Entities.Employee", b =>
@@ -264,6 +230,12 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.Property<decimal>("BasicSalary")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CompanyId1")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -324,6 +296,10 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("CompanyId1");
+
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("DesignationId");
@@ -344,6 +320,9 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.Property<DateTime?>("ActionDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -387,6 +366,8 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("LeaveTypeId");
@@ -401,6 +382,9 @@ namespace ErpMini.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -432,39 +416,9 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LeaveTypes", "erp");
+                    b.HasIndex("CompanyId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Yearly paid leave",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Annual Leave",
-                            TotalDays = 20
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Medical leave",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Sick Leave",
-                            TotalDays = 14
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Short personal leave",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Casual Leave",
-                            TotalDays = 10
-                        });
+                    b.ToTable("LeaveTypes", "erp");
                 });
 
             modelBuilder.Entity("ErpMini.Domain.Entities.Payroll", b =>
@@ -480,6 +434,9 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.Property<decimal>("Bonus")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -525,6 +482,8 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("EmployeeId", "Month", "Year")
                         .IsUnique();
 
@@ -544,6 +503,9 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.Property<DateTime?>("ApprovedOn")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -585,6 +547,8 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("VendorId");
 
                     b.ToTable("PurchaseOrders", "erp");
@@ -597,6 +561,9 @@ namespace ErpMini.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -634,6 +601,8 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("PurchaseOrderId");
 
                     b.ToTable("PurchaseOrderItems", "erp");
@@ -651,6 +620,9 @@ namespace ErpMini.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
@@ -693,6 +665,8 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("CompanyId");
+
                     b.ToTable("Transactions", "erp");
                 });
 
@@ -706,6 +680,9 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("text");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ContactPerson")
                         .IsRequired()
@@ -743,6 +720,8 @@ namespace ErpMini.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.ToTable("Vendors", "erp");
                 });
 
@@ -752,6 +731,9 @@ namespace ErpMini.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -799,6 +781,10 @@ namespace ErpMini.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("ProfileImagePath")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
@@ -955,8 +941,53 @@ namespace ErpMini.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", "erp");
                 });
 
+            modelBuilder.Entity("ErpMini.Domain.Entities.AccountCategory", b =>
+                {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ErpMini.Domain.Entities.Department", b =>
+                {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany("Departments")
+                        .HasForeignKey("CompanyId1");
+                });
+
+            modelBuilder.Entity("ErpMini.Domain.Entities.Designation", b =>
+                {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany("Designations")
+                        .HasForeignKey("CompanyId1");
+                });
+
             modelBuilder.Entity("ErpMini.Domain.Entities.Employee", b =>
                 {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("CompanyId1");
+
                     b.HasOne("ErpMini.Domain.Entities.Department", "Department")
                         .WithMany("Employees")
                         .HasForeignKey("DepartmentId")
@@ -976,6 +1007,12 @@ namespace ErpMini.Infrastructure.Migrations
 
             modelBuilder.Entity("ErpMini.Domain.Entities.LeaveApplication", b =>
                 {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ErpMini.Domain.Entities.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
@@ -993,8 +1030,23 @@ namespace ErpMini.Infrastructure.Migrations
                     b.Navigation("LeaveType");
                 });
 
+            modelBuilder.Entity("ErpMini.Domain.Entities.LeaveType", b =>
+                {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ErpMini.Domain.Entities.Payroll", b =>
                 {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ErpMini.Domain.Entities.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
@@ -1006,6 +1058,12 @@ namespace ErpMini.Infrastructure.Migrations
 
             modelBuilder.Entity("ErpMini.Domain.Entities.PurchaseOrder", b =>
                 {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ErpMini.Domain.Entities.Vendor", "Vendor")
                         .WithMany("PurchaseOrders")
                         .HasForeignKey("VendorId")
@@ -1017,6 +1075,12 @@ namespace ErpMini.Infrastructure.Migrations
 
             modelBuilder.Entity("ErpMini.Domain.Entities.PurchaseOrderItem", b =>
                 {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ErpMini.Domain.Entities.PurchaseOrder", "PurchaseOrder")
                         .WithMany("Items")
                         .HasForeignKey("PurchaseOrderId")
@@ -1034,7 +1098,22 @@ namespace ErpMini.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("ErpMini.Domain.Entities.Vendor", b =>
+                {
+                    b.HasOne("ErpMini.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1091,6 +1170,15 @@ namespace ErpMini.Infrastructure.Migrations
             modelBuilder.Entity("ErpMini.Domain.Entities.AccountCategory", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("ErpMini.Domain.Entities.Company", b =>
+                {
+                    b.Navigation("Departments");
+
+                    b.Navigation("Designations");
+
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("ErpMini.Domain.Entities.Department", b =>

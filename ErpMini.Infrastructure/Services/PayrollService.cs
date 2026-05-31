@@ -34,7 +34,7 @@ public class PayrollService : IPayrollService
             .Include(p => p.Employee).ThenInclude(e => e.Designation)
             .Where(p => p.Employee.CompanyId == companyId
                      && p.Month == month
-                     && p.Year  == year)
+                     && p.Year == year)
             .Select(p => MapToDto(p))
             .ToListAsync();
     }
@@ -55,7 +55,7 @@ public class PayrollService : IPayrollService
         return await _context.Payrolls
             .AnyAsync(p => p.EmployeeId == employeeId
                         && p.Month == month
-                        && p.Year  == year);
+                        && p.Year == year);
     }
 
     public async Task<bool> GenerateAsync(GeneratePayrollDto dto)
@@ -65,18 +65,19 @@ public class PayrollService : IPayrollService
 
         var payroll = new Payroll
         {
-            EmployeeId  = dto.EmployeeId,
-            Month       = dto.Month,
-            Year        = dto.Year,
+            EmployeeId = dto.EmployeeId,
+            Month = dto.Month,
+            Year = dto.Year,
             BasicSalary = dto.BasicSalary,
-            Bonus       = dto.Bonus,
-            Deduction   = dto.Deduction,
-            NetSalary   = dto.BasicSalary + dto.Bonus - dto.Deduction,
-            Note        = dto.Note,
-            Status      = PayrollStatus.Generated,
+            Bonus = dto.Bonus,
+            Deduction = dto.Deduction,
+            NetSalary = dto.BasicSalary + dto.Bonus - dto.Deduction,
+            Note = dto.Note,
+            Status = PayrollStatus.Generated,
             GeneratedBy = dto.GeneratedBy,
             GeneratedOn = DateTime.UtcNow,
-            CreatedAt   = DateTime.UtcNow
+            CompanyId = dto.CompanyId,
+            CreatedAt = DateTime.UtcNow
         };
 
         await _context.Payrolls.AddAsync(payroll);
@@ -94,7 +95,7 @@ public class PayrollService : IPayrollService
         var existingPayrolls = await _context.Payrolls
             .Where(p => p.Employee.CompanyId == companyId
                      && p.Month == month
-                     && p.Year  == year)
+                     && p.Year == year)
             .Select(p => p.EmployeeId)
             .ToListAsync();
 
@@ -106,17 +107,17 @@ public class PayrollService : IPayrollService
 
         var payrolls = pending.Select(e => new Payroll
         {
-            EmployeeId  = e.Id,
-            Month       = month,
-            Year        = year,
+            EmployeeId = e.Id,
+            Month = month,
+            Year = year,
             BasicSalary = e.BasicSalary,
-            Bonus       = 0,
-            Deduction   = 0,
-            NetSalary   = e.BasicSalary,
-            Status      = PayrollStatus.Generated,
+            Bonus = 0,
+            Deduction = 0,
+            NetSalary = e.BasicSalary,
+            Status = PayrollStatus.Generated,
             GeneratedBy = generatedBy,
             GeneratedOn = DateTime.UtcNow,
-            CreatedAt   = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow
         });
 
         await _context.Payrolls.AddRangeAsync(payrolls);
@@ -132,7 +133,7 @@ public class PayrollService : IPayrollService
 
         if (payroll is null) return false;
 
-        payroll.Status    = PayrollStatus.Paid;
+        payroll.Status = PayrollStatus.Paid;
         payroll.UpdatedAt = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
@@ -158,13 +159,13 @@ public class PayrollService : IPayrollService
             .GroupBy(p => new { p.Month, p.Year })
             .Select(g => new PayrollSummaryDto
             {
-                Month          = g.Key.Month,
-                Year           = g.Key.Year,
+                Month = g.Key.Month,
+                Year = g.Key.Year,
                 TotalEmployees = g.Count(),
-                TotalBasic     = g.Sum(p => p.BasicSalary),
-                TotalBonus     = g.Sum(p => p.Bonus),
+                TotalBasic = g.Sum(p => p.BasicSalary),
+                TotalBonus = g.Sum(p => p.Bonus),
                 TotalDeduction = g.Sum(p => p.Deduction),
-                TotalNet       = g.Sum(p => p.NetSalary)
+                TotalNet = g.Sum(p => p.NetSalary)
             })
             .OrderByDescending(s => s.Year)
             .ThenByDescending(s => s.Month)
@@ -173,21 +174,21 @@ public class PayrollService : IPayrollService
 
     private static PayrollDto MapToDto(Payroll p) => new()
     {
-        Id               = p.Id,
-        EmployeeId       = p.EmployeeId,
-        EmployeeName     = $"{p.Employee.FirstName} {p.Employee.LastName}",
-        EmployeeCode     = p.Employee.EmployeeCode,
-        DepartmentName   = p.Employee.Department.Name,
+        Id = p.Id,
+        EmployeeId = p.EmployeeId,
+        EmployeeName = $"{p.Employee.FirstName} {p.Employee.LastName}",
+        EmployeeCode = p.Employee.EmployeeCode,
+        DepartmentName = p.Employee.Department.Name,
         DesignationTitle = p.Employee.Designation.Title,
-        Month            = p.Month,
-        Year             = p.Year,
-        BasicSalary      = p.BasicSalary,
-        Bonus            = p.Bonus,
-        Deduction        = p.Deduction,
-        NetSalary        = p.NetSalary,
-        Note             = p.Note,
-        Status           = p.Status,
-        GeneratedOn      = p.GeneratedOn,
-        GeneratedBy      = p.GeneratedBy
+        Month = p.Month,
+        Year = p.Year,
+        BasicSalary = p.BasicSalary,
+        Bonus = p.Bonus,
+        Deduction = p.Deduction,
+        NetSalary = p.NetSalary,
+        Note = p.Note,
+        Status = p.Status,
+        GeneratedOn = p.GeneratedOn,
+        GeneratedBy = p.GeneratedBy
     };
 }

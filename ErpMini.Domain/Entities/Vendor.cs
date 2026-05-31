@@ -9,6 +9,7 @@ public class Vendor : BaseEntity
     public string Phone { get; set; } = string.Empty;
     public string? Address { get; set; }
     public bool IsActive { get; set; } = true;
+    // public int CompanyId { get; set; }
 
     public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
 }

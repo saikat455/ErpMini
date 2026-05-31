@@ -14,7 +14,7 @@ public class PurchaseOrder : BaseEntity
     public string? ApprovedBy { get; set; }
     public DateTime? ApprovedOn { get; set; }
     public string CreatedByUser { get; set; } = string.Empty;
-
+    // public int CompanyId { get; set; }
     // Navigation
     public Vendor Vendor { get; set; } = null!;
     public ICollection<PurchaseOrderItem> Items { get; set; } = new List<PurchaseOrderItem>();

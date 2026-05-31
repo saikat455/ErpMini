@@ -22,8 +22,8 @@ public class AccountController : Controller
         AppDbContext context)
     {
         _signInManager = signInManager;
-        _userManager   = userManager;
-        _context       = context;
+        _userManager = userManager;
+        _context = context;
     }
 
     // ── Login ──────────────────────────────────────────────────────
@@ -123,25 +123,26 @@ public class AccountController : Controller
             var code = GenerateCompanyCode(vm.CompanyName);
             var company = new Company
             {
-                Name        = vm.CompanyName.Trim(),
+                Name = vm.CompanyName.Trim(),
                 CompanyCode = code,
-                IsActive    = true,
-                CreatedAt   = DateTime.UtcNow
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
             };
             await _context.Companies.AddAsync(company);
             await _context.SaveChangesAsync();
+            await SeedCompanyDefaultsAsync(company.Id);
 
             // Create admin user
             var user = new ApplicationUser
             {
-                FullName       = vm.FullName.Trim(),
-                UserName       = vm.Email.Trim(),
-                Email          = vm.Email.Trim(),
+                FullName = vm.FullName.Trim(),
+                UserName = vm.Email.Trim(),
+                Email = vm.Email.Trim(),
                 EmailConfirmed = true,
-                IsActive       = true,
-                CompanyId      = company.Id,
-                Role           = "Admin",
-                CreatedAt      = DateTime.UtcNow
+                IsActive = true,
+                CompanyId = company.Id,
+                Role = "Admin",
+                CreatedAt = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(user, vm.Password);
@@ -184,14 +185,14 @@ public class AccountController : Controller
 
             var user = new ApplicationUser
             {
-                FullName       = vm.FullName.Trim(),
-                UserName       = vm.Email.Trim(),
-                Email          = vm.Email.Trim(),
+                FullName = vm.FullName.Trim(),
+                UserName = vm.Email.Trim(),
+                Email = vm.Email.Trim(),
                 EmailConfirmed = true,
-                IsActive       = true,
-                CompanyId      = company.Id,
-                Role           = "Employee",
-                CreatedAt      = DateTime.UtcNow
+                IsActive = true,
+                CompanyId = company.Id,
+                Role = "Employee",
+                CreatedAt = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(user, vm.Password);
@@ -258,5 +259,30 @@ public class AccountController : Controller
             .ToArray());
         var suffix = new Random().Next(1000, 9999).ToString();
         return $"{prefix}{suffix}";
+    }
+
+    private async Task SeedCompanyDefaultsAsync(int companyId)
+    {
+        // Default leave types for this company
+        var leaveTypes = new List<LeaveType>
+    {
+        new() { Name = "Annual Leave",  TotalDays = 20, IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow },
+        new() { Name = "Sick Leave",    TotalDays = 14, IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow },
+        new() { Name = "Casual Leave",  TotalDays = 10, IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow }
+    };
+
+        // Default account categories for this company
+        var categories = new List<AccountCategory>
+    {
+        new() { Name = "Sales Revenue",  Type = "Income",  IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow },
+        new() { Name = "Service Income", Type = "Income",  IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow },
+        new() { Name = "Office Rent",    Type = "Expense", IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow },
+        new() { Name = "Utilities",      Type = "Expense", IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow },
+        new() { Name = "Salaries",       Type = "Expense", IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow }
+    };
+
+        await _context.LeaveTypes.AddRangeAsync(leaveTypes);
+        await _context.AccountCategories.AddRangeAsync(categories);
+        await _context.SaveChangesAsync();
     }
 }

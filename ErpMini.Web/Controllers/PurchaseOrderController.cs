@@ -1,6 +1,7 @@
 // ErpMini.Web/Controllers/PurchaseOrderController.cs
 using ErpMini.Application.DTOs;
 using ErpMini.Application.Interfaces;
+using ErpMini.Web.Helpers;
 using ErpMini.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,49 +9,64 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize(Roles = "Admin")]
-public class PurchaseOrderController : Controller
+[Authorize]
+public class PurchaseOrderController : BaseController
 {
     private readonly IProcurementService _service;
-    public PurchaseOrderController(IProcurementService service) => _service = service;
+
+    public PurchaseOrderController(
+        IProcurementService service,
+        UserContext userContext) : base(userContext)
+    {
+        _service = service;
+    }
 
     public async Task<IActionResult> Index()
-        => View(await _service.GetAllOrdersAsync());
+    {
+        var companyId = await GetCompanyIdAsync();
+        return View(await _service.GetAllOrdersAsync(companyId));
+    }
 
     public async Task<IActionResult> Details(int id)
     {
-        var order = await _service.GetOrderByIdAsync(id);
+        var companyId = await GetCompanyIdAsync();
+        var order = await _service.GetOrderByIdAsync(id, companyId);
         if (order is null) return NotFound();
         return View(order);
     }
 
     public async Task<IActionResult> Create()
     {
-        var vendors = await _service.GetAllVendorsAsync();
-        var vm = new CreatePurchaseOrderViewModel
+        var companyId = await GetCompanyIdAsync();
+        var vendors = await _service.GetAllVendorsAsync(companyId);
+        return View(new CreatePurchaseOrderViewModel
         {
-            Vendors = vendors.Select(v =>
-                new SelectListItem(v.Name, v.Id.ToString())).ToList()
-        };
-        return View(vm);
+            Vendors = vendors
+                .Select(v => new SelectListItem(v.Name, v.Id.ToString()))
+                .ToList()
+        });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreatePurchaseOrderViewModel vm,
-        List<string> itemNames, List<string?> itemDescriptions,
-        List<int> quantities, List<decimal> unitPrices)
+    public async Task<IActionResult> Create(
+        CreatePurchaseOrderViewModel vm,
+        List<string> itemNames,
+        List<string?> itemDescriptions,
+        List<int> quantities,
+        List<decimal> unitPrices)
     {
+        var companyId = await GetCompanyIdAsync();
+
         if (!itemNames.Any() || itemNames.All(string.IsNullOrWhiteSpace))
-        {
             ModelState.AddModelError("", "At least one item is required.");
-        }
 
         if (!ModelState.IsValid)
         {
-            var vendors = await _service.GetAllVendorsAsync();
-            vm.Vendors = vendors.Select(v =>
-                new SelectListItem(v.Name, v.Id.ToString())).ToList();
+            var vendors = await _service.GetAllVendorsAsync(companyId);
+            vm.Vendors = vendors
+                .Select(v => new SelectListItem(v.Name, v.Id.ToString()))
+                .ToList();
             return View(vm);
         }
 
@@ -65,17 +81,17 @@ public class PurchaseOrderController : Controller
             .Where(i => !string.IsNullOrWhiteSpace(i.ItemName))
             .ToList();
 
-        var dto = new CreatePurchaseOrderDto
+        var success = await _service.CreateOrderAsync(new CreatePurchaseOrderDto
         {
             VendorId = vm.VendorId,
             OrderDate = vm.OrderDate,
             ExpectedDate = vm.ExpectedDate,
             Notes = vm.Notes,
             CreatedByUser = User.Identity?.Name ?? "Admin",
+            CompanyId = companyId,
             Items = items
-        };
+        });
 
-        var success = await _service.CreateOrderAsync(dto);
         if (success)
         {
             TempData["Success"] = "Purchase order created.";
@@ -86,42 +102,52 @@ public class PurchaseOrderController : Controller
         return View(vm);
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Submit(int id)
     {
-        await _service.SubmitOrderAsync(id);
-        TempData["Success"] = "Order submitted for approval.";
+        var companyId = await GetCompanyIdAsync();
+        await _service.SubmitOrderAsync(id, companyId);
+        TempData["Success"] = "Order submitted.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(int id)
     {
-        await _service.ApproveOrderAsync(id, User.Identity?.Name ?? "Admin");
+        var companyId = await GetCompanyIdAsync();
+        await _service.ApproveOrderAsync(id, User.Identity?.Name ?? "Admin", companyId);
         TempData["Success"] = "Order approved.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Receive(int id)
     {
-        await _service.ReceiveOrderAsync(id);
-        TempData["Success"] = "Items marked as received.";
+        var companyId = await GetCompanyIdAsync();
+        await _service.ReceiveOrderAsync(id, companyId);
+        TempData["Success"] = "Items received.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel(int id)
     {
-        await _service.CancelOrderAsync(id);
+        var companyId = await GetCompanyIdAsync();
+        await _service.CancelOrderAsync(id, companyId);
         TempData["Success"] = "Order cancelled.";
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        await _service.DeleteOrderAsync(id);
+        var companyId = await GetCompanyIdAsync();
+        await _service.DeleteOrderAsync(id, companyId);
         TempData["Success"] = "Order deleted.";
         return RedirectToAction(nameof(Index));
     }

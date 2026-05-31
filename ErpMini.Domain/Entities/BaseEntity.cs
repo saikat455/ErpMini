@@ -9,4 +9,5 @@ public abstract class BaseEntity
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
     public bool IsDeleted { get; set; } = false;   // soft delete
+    public int CompanyId { get; set; }
 }

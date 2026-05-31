@@ -53,6 +53,7 @@ public class CreatePurchaseOrderDto
     public string? Notes { get; set; }
     public string CreatedByUser { get; set; } = string.Empty;
     public List<CreatePurchaseOrderItemDto> Items { get; set; } = new();
+    public int CompanyId { get; set; }
 }
 
 public class CreatePurchaseOrderItemDto

@@ -1,6 +1,8 @@
 <!-- ErpMini.Web/Views/UserManagement/Index.cshtml -->
 @model List<(ErpMini.Infrastructure.Identity.ApplicationUser User, IList<string> Roles)>
-@{ ViewData["Title"] = "User Management"; }
+@{
+    ViewData["Title"] = "User Management";
+}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -23,84 +25,89 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach (var (user, roles) in Model)
-            {
-                var role = roles.FirstOrDefault() ?? "No Role";
-                <tr>
-                    <td class="fw-medium">@user.FullName</td>
-                    <td class="text-muted">@user.Email</td>
-                    <td>
-                        @if (role == "Admin")
-                        {
-                            <span style="background:#1e2a3a;color:#fff;
-                                         font-size:.7rem;padding:2px 10px;
-                                         border-radius:20px;font-weight:600">
-                                ADMIN
+                @foreach (var (user, roles) in Model)
+                {
+                    var role = roles.FirstOrDefault() ?? "No Role";
+                    <tr>
+                        <td class="fw-medium">@user.FullName</td>
+                        <td class="text-muted">@user.Email</td>
+                        <td>
+                            @if (role == "Admin")
+                            {
+                                <span style="background:#1e2a3a;color:#fff;
+                                    font-size:.7rem;padding:2px 10px;
+                                    border-radius:20px;font-weight:600">
+                                    ADMIN
+                                </span>
+                            }
+                            else
+                            {
+                                <span style="background:#e5e9ef;color:#374151;
+                                    font-size:.7rem;padding:2px 10px;
+                                    border-radius:20px;font-weight:600">
+                                    EMPLOYEE
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge @(user.IsActive ? "badge-active" : "badge-inactive")">
+                                @(user.IsActive ? "Active" : "Inactive")
                             </span>
-                        }
-                        else
-                        {
-                            <span style="background:#e5e9ef;color:#374151;
-                                         font-size:.7rem;padding:2px 10px;
-                                         border-radius:20px;font-weight:600">
-                                EMPLOYEE
-                            </span>
-                        }
-                    </td>
-                    <td>
-                        <span class="badge @(user.IsActive ? "badge-active" : "badge-inactive")">
-                            @(user.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </td>
-                    <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
-                    <td class="text-end pe-3">
-                        <div class="d-flex justify-content-end gap-1">
-                            <!-- Role toggle -->
-                            <form asp-action="AssignRole" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="userId" value="@user.Id" />
-                                <select name="role" class="form-select form-select-sm"
-                                        style="width:auto;font-size:.78rem"
-                                        onchange="this.form.submit()">
-                                    <option value="Admin"
-                                            @(role == "Admin" ? "selected" : "")>
-                                        Admin
-                                    </option>
-                                    <option value="Employee"
-                                            @(role == "Employee" ? "selected" : "")>
-                                        Employee
-                                    </option>
-                                </select>
-                            </form>
+                        </td>
+                        <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td class="text-end pe-3">
+                            <div class="d-flex justify-content-end gap-1">
+                                <!-- Role toggle -->
+                                <!-- Replace the role select with this -->
+                                <form asp-action="AssignRole" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <select name="role" class="form-select form-select-sm"
+                                            style="width:auto;font-size:.78rem" onchange="this.form.submit()">
 
-                            <!-- Toggle active -->
-                            <form asp-action="ToggleActive" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="userId" value="@user.Id" />
-                                <button class="btn btn-sm @(user.IsActive
-                                    ? "btn-outline-warning"
-                                    : "btn-outline-success")"
+                                        @if (roles.Contains("Admin"))
+                                        {
+                                            <option value="Admin" selected>Admin</option>
+                                            <option value="Employee">Employee</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="Admin">Admin</option>
+                                            <option value="Employee" selected>Employee</option>
+                                        }
+
+                                    </select>
+                                </form>
+
+                                <!-- Toggle active -->
+                                <form asp-action="ToggleActive" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <button
+                                        class="btn btn-sm @(user.IsActive
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ? "btn-outline-warning"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : "btn-outline-success")"
                                         title="@(user.IsActive ? "Deactivate" : "Activate")">
-                                    <i class="bi @(user.IsActive
-                                        ? "bi-pause-circle"
-                                        : "bi-play-circle")"></i>
-                                </button>
-                            </form>
+                                        <i
+                                        class="bi @(user.IsActive
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ? "bi-pause-circle"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      : "bi-play-circle")"></i>
+                                    </button>
+                                </form>
 
-                            <!-- Remove -->
-                            <form asp-action="RemoveUser" method="post"
-                                  onsubmit="return confirm('Remove @user.FullName from the company?')">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="userId" value="@user.Id" />
-                                <button class="btn btn-sm btn-outline-danger"
-                                        title="Remove user">
-                                    <i class="bi bi-person-x"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            }
+                                <!-- Remove -->
+                                <form asp-action="RemoveUser" method="post"
+                                      onsubmit="return confirm('Remove @user.FullName from the company?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" title="Remove user">
+                                        <i class="bi bi-person-x"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
 

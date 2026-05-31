@@ -21,14 +21,14 @@ public class ProcurementService : IProcurementService
             .Where(v => v.CompanyId == companyId)
             .Select(v => new VendorDto
             {
-                Id            = v.Id,
-                Name          = v.Name,
+                Id = v.Id,
+                Name = v.Name,
                 ContactPerson = v.ContactPerson,
-                Email         = v.Email,
-                Phone         = v.Phone,
-                Address       = v.Address,
-                IsActive      = v.IsActive,
-                TotalOrders   = v.PurchaseOrders.Count(p => !p.IsDeleted)
+                Email = v.Email,
+                Phone = v.Phone,
+                Address = v.Address,
+                IsActive = v.IsActive,
+                TotalOrders = v.PurchaseOrders.Count(p => !p.IsDeleted)
             })
             .ToListAsync();
     }
@@ -42,13 +42,13 @@ public class ProcurementService : IProcurementService
 
         return new VendorDto
         {
-            Id            = v.Id,
-            Name          = v.Name,
+            Id = v.Id,
+            Name = v.Name,
             ContactPerson = v.ContactPerson,
-            Email         = v.Email,
-            Phone         = v.Phone,
-            Address       = v.Address,
-            IsActive      = v.IsActive
+            Email = v.Email,
+            Phone = v.Phone,
+            Address = v.Address,
+            IsActive = v.IsActive
         };
     }
 
@@ -56,13 +56,13 @@ public class ProcurementService : IProcurementService
     {
         var vendor = new Vendor
         {
-            Name          = dto.Name,
+            Name = dto.Name,
             ContactPerson = dto.ContactPerson,
-            Email         = dto.Email,
-            Phone         = dto.Phone,
-            Address       = dto.Address,
-            CompanyId     = companyId,
-            CreatedAt     = DateTime.UtcNow
+            Email = dto.Email,
+            Phone = dto.Phone,
+            Address = dto.Address,
+            CompanyId = companyId,
+            CreatedAt = DateTime.UtcNow
         };
         await _context.Vendors.AddAsync(vendor);
         return await _context.SaveChangesAsync() > 0;
@@ -75,12 +75,12 @@ public class ProcurementService : IProcurementService
 
         if (v is null) return false;
 
-        v.Name          = dto.Name;
+        v.Name = dto.Name;
         v.ContactPerson = dto.ContactPerson;
-        v.Email         = dto.Email;
-        v.Phone         = dto.Phone;
-        v.Address       = dto.Address;
-        v.UpdatedAt     = DateTime.UtcNow;
+        v.Email = dto.Email;
+        v.Phone = dto.Phone;
+        v.Address = dto.Address;
+        v.UpdatedAt = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
 
@@ -123,24 +123,25 @@ public class ProcurementService : IProcurementService
     {
         var order = new PurchaseOrder
         {
-            PoNumber     = await GeneratePoNumberAsync(dto.CompanyId),
-            VendorId     = dto.VendorId,
-            CompanyId    = dto.CompanyId,
-            OrderDate    = DateTime.SpecifyKind(dto.OrderDate, DateTimeKind.Utc),
+            PoNumber = await GeneratePoNumberAsync(dto.CompanyId),
+            VendorId = dto.VendorId,
+            CompanyId = dto.CompanyId,
+            OrderDate = DateTime.SpecifyKind(dto.OrderDate, DateTimeKind.Utc),
             ExpectedDate = dto.ExpectedDate.HasValue
                 ? DateTime.SpecifyKind(dto.ExpectedDate.Value, DateTimeKind.Utc)
                 : null,
-            Notes         = dto.Notes,
-            Status        = PurchaseOrderStatus.Draft,
+            Notes = dto.Notes,
+            Status = PurchaseOrderStatus.Draft,
             CreatedByUser = dto.CreatedByUser,
-            CreatedAt     = DateTime.UtcNow,
-            Items         = dto.Items.Select(i => new PurchaseOrderItem
+            CreatedAt = DateTime.UtcNow,
+            Items = dto.Items.Select(i => new PurchaseOrderItem
             {
-                ItemName    = i.ItemName,
+                ItemName = i.ItemName,
                 Description = i.Description,
-                Quantity    = i.Quantity,
-                UnitPrice   = i.UnitPrice,
-                CreatedAt   = DateTime.UtcNow
+                Quantity = i.Quantity,
+                UnitPrice = i.UnitPrice,
+                CompanyId = dto.CompanyId,
+                CreatedAt = DateTime.UtcNow
             }).ToList()
         };
 
@@ -158,10 +159,10 @@ public class ProcurementService : IProcurementService
 
         if (order is null) return false;
 
-        order.Status     = PurchaseOrderStatus.Approved;
+        order.Status = PurchaseOrderStatus.Approved;
         order.ApprovedBy = approvedBy;
         order.ApprovedOn = DateTime.UtcNow;
-        order.UpdatedAt  = DateTime.UtcNow;
+        order.UpdatedAt = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
 
@@ -173,7 +174,7 @@ public class ProcurementService : IProcurementService
 
         if (order is null) return false;
 
-        order.Status    = PurchaseOrderStatus.Received;
+        order.Status = PurchaseOrderStatus.Received;
         order.UpdatedAt = DateTime.UtcNow;
 
         foreach (var item in order.Items)
@@ -222,33 +223,33 @@ public class ProcurementService : IProcurementService
 
         if (order is null) return false;
 
-        order.Status    = status;
+        order.Status = status;
         order.UpdatedAt = DateTime.UtcNow;
         return await _context.SaveChangesAsync() > 0;
     }
 
     private static PurchaseOrderDto MapToDto(PurchaseOrder p) => new()
     {
-        Id            = p.Id,
-        PoNumber      = p.PoNumber,
-        VendorId      = p.VendorId,
-        VendorName    = p.Vendor.Name,
-        OrderDate     = p.OrderDate,
-        ExpectedDate  = p.ExpectedDate,
-        Status        = p.Status,
-        Notes         = p.Notes,
-        ApprovedBy    = p.ApprovedBy,
-        ApprovedOn    = p.ApprovedOn,
+        Id = p.Id,
+        PoNumber = p.PoNumber,
+        VendorId = p.VendorId,
+        VendorName = p.Vendor.Name,
+        OrderDate = p.OrderDate,
+        ExpectedDate = p.ExpectedDate,
+        Status = p.Status,
+        Notes = p.Notes,
+        ApprovedBy = p.ApprovedBy,
+        ApprovedOn = p.ApprovedOn,
         CreatedByUser = p.CreatedByUser,
-        CreatedAt     = p.CreatedAt,
-        Items         = p.Items.Select(i => new PurchaseOrderItemDto
+        CreatedAt = p.CreatedAt,
+        Items = p.Items.Select(i => new PurchaseOrderItemDto
         {
-            Id          = i.Id,
-            ItemName    = i.ItemName,
+            Id = i.Id,
+            ItemName = i.ItemName,
             Description = i.Description,
-            Quantity    = i.Quantity,
-            UnitPrice   = i.UnitPrice,
-            IsReceived  = i.IsReceived
+            Quantity = i.Quantity,
+            UnitPrice = i.UnitPrice,
+            IsReceived = i.IsReceived
         }).ToList()
     };
 }

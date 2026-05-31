@@ -2,6 +2,7 @@
 using ErpMini.Application.DTOs;
 using ErpMini.Application.Interfaces;
 using ErpMini.Domain.Enums;
+using ErpMini.Web.Helpers;
 using ErpMini.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,47 +10,54 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize(Roles = "Admin,Finance")]
-public class AccountsController : Controller
+[Authorize]
+public class AccountsController : BaseController
 {
     private readonly IAccountsService _service;
-    public AccountsController(IAccountsService service) => _service = service;
 
-    // All transactions with filter
+    public AccountsController(
+        IAccountsService service,
+        UserContext userContext) : base(userContext)
+    {
+        _service = service;
+    }
+
     public async Task<IActionResult> Index(string? typeFilter)
     {
-        var (income, expense, _) = await _service.GetTotalsAsync();
+        var companyId = await GetCompanyIdAsync();
+        var (income, expense, _) = await _service.GetTotalsAsync(companyId);
 
         IEnumerable<TransactionDto> transactions = typeFilter switch
         {
-            "Income"  => await _service.GetByTypeAsync(TransactionType.Income),
-            "Expense" => await _service.GetByTypeAsync(TransactionType.Expense),
-            _         => await _service.GetAllAsync()
+            "Income" => await _service.GetByTypeAsync(TransactionType.Income, companyId),
+            "Expense" => await _service.GetByTypeAsync(TransactionType.Expense, companyId),
+            _ => await _service.GetAllAsync(companyId)
         };
 
-        var vm = new TransactionFilterViewModel
+        return View(new TransactionFilterViewModel
         {
             TypeFilter = typeFilter,
             Transactions = transactions,
             TotalIncome = income,
             TotalExpense = expense
-        };
-
-        return View(vm);
+        });
     }
 
-    // Add income
     public async Task<IActionResult> AddIncome()
     {
-        var vm = new CreateTransactionViewModel { Type = TransactionType.Income };
-        return View(await BuildViewModel(vm, "Income"));
+        var companyId = await GetCompanyIdAsync();
+        return View(await BuildViewModel(
+            new CreateTransactionViewModel
+            { Type = TransactionType.Income }, "Income", companyId));
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddIncome(CreateTransactionViewModel vm)
     {
+        var companyId = await GetCompanyIdAsync();
         if (!ModelState.IsValid)
-            return View(await BuildViewModel(vm, "Income"));
+            return View(await BuildViewModel(vm, "Income", companyId));
 
         await _service.CreateAsync(new CreateTransactionDto
         {
@@ -59,25 +67,29 @@ public class AccountsController : Controller
             TransactionDate = vm.TransactionDate,
             Description = vm.Description,
             Note = vm.Note,
-            CreatedByUser = User.Identity?.Name ?? "Admin"
+            CreatedByUser = User.Identity?.Name ?? "Admin",
+            CompanyId = companyId
         });
 
-        TempData["Success"] = "Income entry added.";
+        TempData["Success"] = "Income added.";
         return RedirectToAction(nameof(Index), new { typeFilter = "Income" });
     }
 
-    // Add expense
     public async Task<IActionResult> AddExpense()
     {
-        var vm = new CreateTransactionViewModel { Type = TransactionType.Expense };
-        return View(await BuildViewModel(vm, "Expense"));
+        var companyId = await GetCompanyIdAsync();
+        return View(await BuildViewModel(
+            new CreateTransactionViewModel
+            { Type = TransactionType.Expense }, "Expense", companyId));
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddExpense(CreateTransactionViewModel vm)
     {
+        var companyId = await GetCompanyIdAsync();
         if (!ModelState.IsValid)
-            return View(await BuildViewModel(vm, "Expense"));
+            return View(await BuildViewModel(vm, "Expense", companyId));
 
         await _service.CreateAsync(new CreateTransactionDto
         {
@@ -87,59 +99,60 @@ public class AccountsController : Controller
             TransactionDate = vm.TransactionDate,
             Description = vm.Description,
             Note = vm.Note,
-            CreatedByUser = User.Identity?.Name ?? "Admin"
+            CreatedByUser = User.Identity?.Name ?? "Admin",
+            CompanyId = companyId
         });
 
-        TempData["Success"] = "Expense entry added.";
+        TempData["Success"] = "Expense added.";
         return RedirectToAction(nameof(Index), new { typeFilter = "Expense" });
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        await _service.DeleteAsync(id);
+        var companyId = await GetCompanyIdAsync();
+        await _service.DeleteAsync(id, companyId);
         TempData["Success"] = "Transaction deleted.";
         return RedirectToAction(nameof(Index));
     }
 
-    // Ledger
     public async Task<IActionResult> Ledger(DateTime? from, DateTime? to)
     {
+        var companyId = await GetCompanyIdAsync();
         var fromDate = from ?? new DateTime(DateTime.Today.Year, 1, 1);
-        var toDate   = to   ?? DateTime.Today;
+        var toDate = to ?? DateTime.Today;
 
         var entries = await _service.GetLedgerAsync(
             DateTime.SpecifyKind(fromDate, DateTimeKind.Utc),
-            DateTime.SpecifyKind(toDate,   DateTimeKind.Utc));
+            DateTime.SpecifyKind(toDate, DateTimeKind.Utc),
+            companyId);
 
-        var vm = new LedgerFilterViewModel
+        return View(new LedgerFilterViewModel
         {
-            From    = fromDate,
-            To      = toDate,
+            From = fromDate,
+            To = toDate,
             Entries = entries
-        };
-
-        return View(vm);
+        });
     }
 
-    // Monthly summary
     public async Task<IActionResult> Summary()
     {
-        var summary = await _service.GetMonthlySummaryAsync();
-        return View(summary);
+        var companyId = await GetCompanyIdAsync();
+        return View(await _service.GetMonthlySummaryAsync(companyId));
     }
 
-    // Category management
     public async Task<IActionResult> Categories()
         => View(await _service.GetCategoriesAsync());
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateCategory(
         string name, string type, string? description)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            TempData["Error"] = "Category name is required.";
+            TempData["Error"] = "Name is required.";
             return RedirectToAction(nameof(Categories));
         }
         await _service.CreateCategoryAsync(name, type, description);
@@ -147,7 +160,8 @@ public class AccountsController : Controller
         return RedirectToAction(nameof(Categories));
     }
 
-    [HttpPost][ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteCategory(int id)
     {
         await _service.DeleteCategoryAsync(id);
@@ -156,7 +170,7 @@ public class AccountsController : Controller
     }
 
     private async Task<CreateTransactionViewModel> BuildViewModel(
-        CreateTransactionViewModel vm, string typeFilter)
+        CreateTransactionViewModel vm, string typeFilter, int companyId)
     {
         var categories = await _service.GetCategoriesAsync();
         vm.Categories = categories

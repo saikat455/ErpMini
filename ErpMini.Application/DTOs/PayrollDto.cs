@@ -35,6 +35,7 @@ public class GeneratePayrollDto
     public decimal Deduction { get; set; }
     public string? Note { get; set; }
     public string? GeneratedBy { get; set; }
+    public int CompanyId { get; set; }
 }
 
 public class PayrollSummaryDto

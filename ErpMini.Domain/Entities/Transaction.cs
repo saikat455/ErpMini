@@ -13,7 +13,7 @@ public class Transaction : BaseEntity
     public string Description { get; set; } = string.Empty;
     public string? Note { get; set; }
     public string CreatedByUser { get; set; } = string.Empty;
-
+    // public int CompanyId { get; set; }
     // Navigation
     public AccountCategory Category { get; set; } = null!;
 }

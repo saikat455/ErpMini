@@ -28,6 +28,7 @@ public class CreateTransactionDto
     public string Description { get; set; } = string.Empty;
     public string? Note { get; set; }
     public string CreatedByUser { get; set; } = string.Empty;
+    public int CompanyId { get; set; }
 }
 
 public class AccountCategoryDto

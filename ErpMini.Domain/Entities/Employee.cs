@@ -18,9 +18,9 @@ public class Employee : BaseEntity
     public int DepartmentId { get; set; }
     public int DesignationId { get; set; }
     public string? UserId { get; set; }
-    public int CompanyId { get; set; }          // ← NEW
+    // public int CompanyId { get; set; }          // ← NEW
 
     public Department Department { get; set; } = null!;
     public Designation Designation { get; set; } = null!;
-    public Company Company { get; set; } = null!; // ← NEW
+    // public Company Company { get; set; } = null!; // ← NEW
 }

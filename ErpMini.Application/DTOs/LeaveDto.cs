@@ -26,6 +26,7 @@ public class LeaveApplicationDto
 
 public class CreateLeaveDto
 {
+    public int CompanyId { get; set; }
     public int EmployeeId { get; set; }
     public int LeaveTypeId { get; set; }
     public DateTime FromDate { get; set; }
