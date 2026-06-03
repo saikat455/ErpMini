@@ -6,6 +6,7 @@ using ErpMini.Infrastructure.Services;
 using ErpMini.Web.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ErpMini.Web.Helpers;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -19,36 +20,42 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.Password.RequiredLength         = 8;
-    options.Password.RequireDigit           = true;
-    options.Password.RequireUppercase       = false;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.DefaultLockoutTimeSpan  = TimeSpan.FromMinutes(5);
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-// Cookie settings
+// Cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath       = "/Account/Login";
-    options.LogoutPath      = "/Account/Logout";
-    options.AccessDeniedPath = "/Account/Login";
-    options.ExpireTimeSpan  = TimeSpan.FromHours(8);
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
     options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
-// Services
-builder.Services.AddScoped<IUnitOfWork,        UnitOfWork>();
-builder.Services.AddScoped<IEmployeeService,   EmployeeService>();
+// ── HTTP context (required by UserContext) ────────────────────
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ErpMini.Web.Helpers.UserContext>();
+
+// ── Application services ──────────────────────────────────────
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<IDesignationService,DesignationService>();
-builder.Services.AddScoped<ILeaveService,      LeaveService>();
-builder.Services.AddScoped<IPayrollService,    PayrollService>();
-builder.Services.AddScoped<IProcurementService,ProcurementService>();
-builder.Services.AddScoped<IAccountsService,   AccountsService>();
-builder.Services.AddScoped<IDashboardService,  DashboardService>();
+builder.Services.AddScoped<IDesignationService, DesignationService>();
+builder.Services.AddScoped<ILeaveService, LeaveService>();
+builder.Services.AddScoped<IPayrollService, PayrollService>();
+builder.Services.AddScoped<IProcurementService, ProcurementService>();
+builder.Services.AddScoped<IAccountsService, AccountsService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddControllersWithViews();
 
