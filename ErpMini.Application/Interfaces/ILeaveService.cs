@@ -18,6 +18,6 @@ public interface ILeaveService
 
     // Leave types (global — not company-scoped)
     Task<IEnumerable<LeaveTypeDto>> GetLeaveTypesAsync();
-    Task<bool> CreateLeaveTypeAsync(string name, int days, string? description);
+    Task<bool> CreateLeaveTypeAsync(string name, int days, string? description, int companyId);
     Task<bool> DeleteLeaveTypeAsync(int id);
 }

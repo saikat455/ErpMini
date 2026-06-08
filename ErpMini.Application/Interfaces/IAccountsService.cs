@@ -23,6 +23,6 @@ public interface IAccountsService
 
     // Categories (global — not company-scoped)
     Task<IEnumerable<AccountCategoryDto>> GetCategoriesAsync();
-    Task<bool> CreateCategoryAsync(string name, string type, string? description);
+    Task<bool> CreateCategoryAsync(string name, string type, string? description, int companyId);
     Task<bool> DeleteCategoryAsync(int id);
 }

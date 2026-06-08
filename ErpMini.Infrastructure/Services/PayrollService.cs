@@ -117,6 +117,7 @@ public class PayrollService : IPayrollService
             Status = PayrollStatus.Generated,
             GeneratedBy = generatedBy,
             GeneratedOn = DateTime.UtcNow,
+            CompanyId = companyId,
             CreatedAt = DateTime.UtcNow
         });
 

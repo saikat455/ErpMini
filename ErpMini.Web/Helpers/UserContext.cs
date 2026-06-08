@@ -1,10 +1,11 @@
 // ErpMini.Web/Helpers/UserContext.cs
+using ErpMini.Application.Interfaces;
 using ErpMini.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace ErpMini.Web.Helpers;
 
-public class UserContext
+public class UserContext : ICompanyContext
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;

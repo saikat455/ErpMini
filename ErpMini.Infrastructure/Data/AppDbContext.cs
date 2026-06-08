@@ -1,4 +1,5 @@
 // ErpMini.Infrastructure/Data/AppDbContext.cs
+using ErpMini.Application.Interfaces;
 using ErpMini.Domain.Entities;
 using ErpMini.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -8,7 +9,14 @@ namespace ErpMini.Infrastructure.Data;
 
 public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+    private readonly ICompanyContext _companyContext;
+
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options,
+        ICompanyContext companyContext) : base(options)
+    {
+        _companyContext = companyContext;
+    }
 
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<Employee> Employees => Set<Employee>();
@@ -22,6 +30,32 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PurchaseOrderItem> PurchaseOrderItems => Set<PurchaseOrderItem>();
     public DbSet<AccountCategory> AccountCategories => Set<AccountCategory>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
+
+    public override async Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var companyId = await _companyContext.GetCompanyIdAsync();
+
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+                if (entry.Entity.CompanyId == 0 && companyId.HasValue
+                    && entry.Entity is not Company)
+                {
+                    entry.Entity.CompanyId = companyId.Value;
+                }
+            }
+
+            if (entry.State is EntityState.Modified or EntityState.Added)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -45,22 +79,21 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Transaction>().HasQueryFilter(t => !t.IsDeleted);
 
         // ── All entities → Company (CompanyId from BaseEntity) ───────
-        // Using HasOne<Company>().WithMany() for all — no nav property needed
         builder.Entity<Employee>()
             .HasOne<Company>()
-            .WithMany()
+            .WithMany(c => c.Employees)
             .HasForeignKey(e => e.CompanyId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Department>()
             .HasOne<Company>()
-            .WithMany()
+            .WithMany(c => c.Departments)
             .HasForeignKey(d => d.CompanyId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Designation>()
             .HasOne<Company>()
-            .WithMany()
+            .WithMany(c => c.Designations)
             .HasForeignKey(d => d.CompanyId)
             .OnDelete(DeleteBehavior.Restrict);
 

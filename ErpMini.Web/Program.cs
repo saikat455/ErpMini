@@ -45,6 +45,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 // ── HTTP context (required by UserContext) ────────────────────
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ErpMini.Web.Helpers.UserContext>();
+builder.Services.AddScoped<ErpMini.Application.Interfaces.ICompanyContext,
+    ErpMini.Web.Helpers.UserContext>();
 
 // ── Application services ──────────────────────────────────────
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

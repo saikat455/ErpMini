@@ -155,7 +155,8 @@ public class AccountsController : BaseController
             TempData["Error"] = "Name is required.";
             return RedirectToAction(nameof(Categories));
         }
-        await _service.CreateCategoryAsync(name, type, description);
+        var companyId = await GetCompanyIdAsync();
+        await _service.CreateCategoryAsync(name, type, description, companyId);
         TempData["Success"] = "Category added.";
         return RedirectToAction(nameof(Categories));
     }

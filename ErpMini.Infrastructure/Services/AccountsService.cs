@@ -185,13 +185,14 @@ public class AccountsService : IAccountsService
     }
 
     public async Task<bool> CreateCategoryAsync(
-        string name, string type, string? description)
+        string name, string type, string? description, int companyId)
     {
         await _context.AccountCategories.AddAsync(new AccountCategory
         {
             Name        = name,
             Type        = type,
             Description = description,
+            CompanyId   = companyId,
             CreatedAt   = DateTime.UtcNow
         });
         return await _context.SaveChangesAsync() > 0;

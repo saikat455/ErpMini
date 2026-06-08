@@ -157,13 +157,14 @@ public class LeaveService : ILeaveService
     }
 
     public async Task<bool> CreateLeaveTypeAsync(
-        string name, int days, string? description)
+        string name, int days, string? description, int companyId)
     {
         await _context.LeaveTypes.AddAsync(new LeaveType
         {
             Name = name,
             TotalDays = days,
             Description = description,
+            CompanyId = companyId,
             CreatedAt = DateTime.UtcNow
         });
         return await _context.SaveChangesAsync() > 0;

@@ -127,7 +127,8 @@ public class LeaveController : BaseController
             TempData["Error"] = "Name is required.";
             return RedirectToAction(nameof(LeaveTypes));
         }
-        await _leaveService.CreateLeaveTypeAsync(name, totalDays, description);
+        var companyId = await GetCompanyIdAsync();
+        await _leaveService.CreateLeaveTypeAsync(name, totalDays, description, companyId);
         TempData["Success"] = "Leave type added.";
         return RedirectToAction(nameof(LeaveTypes));
     }
