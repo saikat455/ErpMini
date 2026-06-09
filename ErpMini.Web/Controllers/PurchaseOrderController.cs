@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class PurchaseOrderController : BaseController
 {
     private readonly IProcurementService _service;

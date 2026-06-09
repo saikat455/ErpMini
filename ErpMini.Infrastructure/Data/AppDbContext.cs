@@ -4,6 +4,7 @@ using ErpMini.Domain.Entities;
 using ErpMini.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ErpMini.Infrastructure.Data;
 

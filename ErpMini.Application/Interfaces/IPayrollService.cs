@@ -6,6 +6,7 @@ namespace ErpMini.Application.Interfaces;
 public interface IPayrollService
 {
     Task<IEnumerable<PayrollDto>> GetAllAsync(int companyId);
+    Task<IEnumerable<PayrollDto>> GetByEmployeeAsync(int employeeId, int companyId);
     Task<IEnumerable<PayrollDto>> GetByMonthYearAsync(int month, int year, int companyId);
     Task<PayrollDto?> GetByIdAsync(int id, int companyId);
     Task<bool> GenerateAsync(GeneratePayrollDto dto);

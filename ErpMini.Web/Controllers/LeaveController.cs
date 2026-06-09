@@ -24,12 +24,27 @@ public class LeaveController : BaseController
         _employeeService = employeeService;
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Index()
     {
         var companyId = await GetCompanyIdAsync();
         return View(await _leaveService.GetAllAsync(companyId));
     }
 
+    public async Task<IActionResult> MyLeaves()
+    {
+        var companyId = await GetCompanyIdAsync();
+        var employees = await _employeeService.GetAllAsync(companyId);
+        var emp = employees.FirstOrDefault(e =>
+            string.Equals(e.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase));
+
+        if (emp is null) return RedirectToAction("MyProfile", "Employee");
+
+        var leaves = await _leaveService.GetByEmployeeAsync(emp.Id, companyId);
+        return View(leaves);
+    }
+
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Pending()
     {
         var companyId = await GetCompanyIdAsync();
@@ -39,7 +54,19 @@ public class LeaveController : BaseController
     public async Task<IActionResult> Apply()
     {
         var companyId = await GetCompanyIdAsync();
-        return View(await BuildViewModel(new ApplyLeaveViewModel(), companyId));
+        var isAdmin = User.IsInRole("Admin");
+        var vm = new ApplyLeaveViewModel();
+
+        if (!isAdmin)
+        {
+            var employees = await _employeeService.GetAllAsync(companyId);
+            var emp = employees.FirstOrDefault(e =>
+                string.Equals(e.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase));
+            if (emp is null) return RedirectToAction("MyProfile", "Employee");
+            vm.EmployeeId = emp.Id;
+        }
+
+        return View(await BuildApplyViewModel(vm, companyId));
     }
 
     [HttpPost]
@@ -47,12 +74,22 @@ public class LeaveController : BaseController
     public async Task<IActionResult> Apply(ApplyLeaveViewModel vm)
     {
         var companyId = await GetCompanyIdAsync();
+        var isAdmin = User.IsInRole("Admin");
 
         if (vm.ToDate < vm.FromDate)
             ModelState.AddModelError("ToDate", "To date cannot be before from date.");
 
+        if (!isAdmin)
+        {
+            var employees = await _employeeService.GetAllAsync(companyId);
+            var emp = employees.FirstOrDefault(e =>
+                string.Equals(e.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase));
+            if (emp is null) return RedirectToAction("MyProfile", "Employee");
+            vm.EmployeeId = emp.Id;
+        }
+
         if (!ModelState.IsValid)
-            return View(await BuildViewModel(vm, companyId));
+            return View(await BuildApplyViewModel(vm, companyId));
 
         var success = await _leaveService.ApplyAsync(new CreateLeaveDto
         {
@@ -67,13 +104,14 @@ public class LeaveController : BaseController
         if (success)
         {
             TempData["Success"] = "Leave application submitted.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(isAdmin ? nameof(Index) : nameof(MyLeaves));
         }
 
         ModelState.AddModelError("", "Failed to submit.");
-        return View(await BuildViewModel(vm, companyId));
+        return View(await BuildApplyViewModel(vm, companyId));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(int id)
@@ -85,6 +123,7 @@ public class LeaveController : BaseController
         return RedirectToAction(nameof(Pending));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(RejectLeaveViewModel vm)
@@ -101,6 +140,7 @@ public class LeaveController : BaseController
         return RedirectToAction(nameof(Pending));
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Balance(int employeeId)
     {
         var companyId = await GetCompanyIdAsync();
@@ -117,6 +157,7 @@ public class LeaveController : BaseController
         return View(types);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateLeaveType(
@@ -133,6 +174,7 @@ public class LeaveController : BaseController
         return RedirectToAction(nameof(LeaveTypes));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteLeaveType(int id)
@@ -142,16 +184,21 @@ public class LeaveController : BaseController
         return RedirectToAction(nameof(LeaveTypes));
     }
 
-    private async Task<ApplyLeaveViewModel> BuildViewModel(
+    private async Task<ApplyLeaveViewModel> BuildApplyViewModel(
         ApplyLeaveViewModel vm, int companyId)
     {
-        var employees = await _employeeService.GetAllAsync(companyId);
+        var isAdmin = User.IsInRole("Admin");
         var leaveTypes = await _leaveService.GetLeaveTypesAsync();
 
-        vm.Employees = employees
-            .Select(e => new SelectListItem(
-                $"{e.FullName} ({e.EmployeeCode})", e.Id.ToString()))
-            .ToList();
+        if (isAdmin)
+        {
+            var employees = await _employeeService.GetAllAsync(companyId);
+            vm.Employees = employees
+                .Select(e => new SelectListItem(
+                    $"{e.FullName} ({e.EmployeeCode})", e.Id.ToString()))
+                .ToList();
+        }
+
         vm.LeaveTypes = leaveTypes
             .Select(lt => new SelectListItem(
                 $"{lt.Name} ({lt.TotalDays} days)", lt.Id.ToString()))

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class DesignationController : BaseController
 {
     private readonly IDesignationService _service;

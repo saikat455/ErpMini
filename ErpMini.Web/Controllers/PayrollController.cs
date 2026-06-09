@@ -24,6 +24,7 @@ public class PayrollController : BaseController
         _employeeService = employee;
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Index(int? month, int? year)
     {
         var companyId = await GetCompanyIdAsync();
@@ -43,12 +44,27 @@ public class PayrollController : BaseController
         });
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> History()
     {
         var companyId = await GetCompanyIdAsync();
         return View(await _payrollService.GetAllAsync(companyId));
     }
 
+    public async Task<IActionResult> MyPayslips()
+    {
+        var companyId = await GetCompanyIdAsync();
+        var employees = await _employeeService.GetAllAsync(companyId);
+        var emp = employees.FirstOrDefault(e =>
+            string.Equals(e.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase));
+
+        if (emp is null) return RedirectToAction("MyProfile", "Employee");
+
+        var payrolls = await _payrollService.GetByEmployeeAsync(emp.Id, companyId);
+        return View(payrolls);
+    }
+
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Summary()
     {
         var companyId = await GetCompanyIdAsync();
@@ -60,9 +76,21 @@ public class PayrollController : BaseController
         var companyId = await GetCompanyIdAsync();
         var payroll = await _payrollService.GetByIdAsync(id, companyId);
         if (payroll is null) return NotFound();
+
+        var isAdmin = User.IsInRole("Admin");
+        if (!isAdmin)
+        {
+            var employees = await _employeeService.GetAllAsync(companyId);
+            var emp = employees.FirstOrDefault(e =>
+                string.Equals(e.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase));
+            if (emp is null || payroll.EmployeeId != emp.Id)
+                return Forbid();
+        }
+
         return View(payroll);
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Generate()
     {
         var companyId = await GetCompanyIdAsync();
@@ -70,6 +98,7 @@ public class PayrollController : BaseController
             new GeneratePayrollViewModel(), companyId));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Generate(GeneratePayrollViewModel vm)
@@ -110,6 +139,7 @@ public class PayrollController : BaseController
         return View(await BuildGenerateViewModel(vm, companyId));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> BulkGenerate(int month, int year)
@@ -126,6 +156,7 @@ public class PayrollController : BaseController
         return RedirectToAction(nameof(Index), new { month, year });
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkAsPaid(int id, int month, int year)
@@ -136,6 +167,7 @@ public class PayrollController : BaseController
         return RedirectToAction(nameof(Index), new { month, year });
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
@@ -146,6 +178,7 @@ public class PayrollController : BaseController
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetEmployeeSalary(int employeeId)
     {

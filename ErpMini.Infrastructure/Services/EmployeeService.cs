@@ -121,6 +121,25 @@ public class EmployeeService : IEmployeeService
         return await _context.SaveChangesAsync() > 0;
     }
 
+    public async Task<bool> UpdatePersonalInfoAsync(int id, UpdatePersonalInfoDto dto)
+    {
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == id && e.CompanyId == dto.CompanyId);
+
+        if (employee is null) return false;
+
+        employee.FirstName   = dto.FirstName;
+        employee.LastName    = dto.LastName;
+        employee.Email       = dto.Email;
+        employee.Phone       = dto.Phone;
+        employee.Address     = dto.Address;
+        employee.DateOfBirth = DateTime.SpecifyKind(dto.DateOfBirth, DateTimeKind.Utc);
+        employee.Gender      = dto.Gender;
+        employee.UpdatedAt   = DateTime.UtcNow;
+
+        return await _context.SaveChangesAsync() > 0;
+    }
+
     public async Task<bool> DeleteAsync(int id, int companyId)
     {
         var employee = await _context.Employees

@@ -1,0 +1,66 @@
+@model IEnumerable<ErpMini.Application.DTOs.PayrollDto>
+@{ ViewData["Title"] = "My Payslips"; }
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <div>
+        <p class="page-header-title">My Payslips</p>
+        <p class="page-header-sub">Your salary records</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Basic</th>
+                    <th>Bonus</th>
+                    <th>Deduction</th>
+                    <th>Net Salary</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td class="fw-medium">@p.MonthName</td>
+                    <td>৳ @p.BasicSalary.ToString("N0")</td>
+                    <td class="text-success">
+                        @(p.Bonus > 0 ? $"৳ {p.Bonus:N0}" : "—")
+                    </td>
+                    <td class="text-danger">
+                        @(p.Deduction > 0 ? $"৳ {p.Deduction:N0}" : "—")
+                    </td>
+                    <td class="fw-semibold">৳ @p.NetSalary.ToString("N0")</td>
+                    <td>
+                        @{
+                            var sc = p.Status == ErpMini.Domain.Enums.PayrollStatus.Paid
+                                ? "badge-active"
+                                : p.Status == ErpMini.Domain.Enums.PayrollStatus.Cancelled
+                                    ? "badge-inactive" : "badge-pending";
+                        }
+                        <span class="badge @sc">@p.StatusLabel</span>
+                    </td>
+                    <td class="text-end pe-3">
+                        <a asp-action="Payslip" asp-route-id="@p.Id"
+                           class="btn btn-sm btn-outline-secondary" title="View Payslip">
+                            <i class="bi bi-receipt"></i> View
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-cash-stack" style="font-size:2rem"></i>
+                <p class="mt-2 mb-0">No payslips available yet.</p>
+            </div>
+        }
+    </div>
+</div>

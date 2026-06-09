@@ -41,7 +41,7 @@ public class LeaveService : ILeaveService
         int employeeId, int companyId)
     {
         return await _context.LeaveApplications
-            .Include(l => l.Employee)
+            .Include(l => l.Employee).ThenInclude(e => e.Department)
             .Include(l => l.LeaveType)
             .Where(l => l.EmployeeId == employeeId
                      && l.Employee.CompanyId == companyId)

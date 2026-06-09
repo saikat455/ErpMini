@@ -1,9 +1,12 @@
 <!-- ErpMini.Web/Views/Payroll/Payslip.cshtml -->
 @model ErpMini.Application.DTOs.PayrollDto
-@{ ViewData["Title"] = "Payslip"; }
+@{
+    var isAdmin = User.IsInRole("Admin");
+    ViewData["Title"] = "Payslip";
+}
 
 <div class="d-flex align-items-center gap-2 mb-4">
-    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+    <a asp-action="@(isAdmin ? "Index" : "MyPayslips")" class="btn btn-sm btn-outline-secondary">
         <i class="bi bi-arrow-left"></i>
     </a>
     <div class="flex-grow-1">

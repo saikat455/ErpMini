@@ -1,0 +1,64 @@
+@model IEnumerable<ErpMini.Application.DTOs.LeaveApplicationDto>
+@{ ViewData["Title"] = "My Leaves"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="page-header-title">My Leaves</p>
+        <p class="page-header-sub">Your leave applications</p>
+    </div>
+    <a asp-action="Apply" class="btn btn-dark btn-sm px-3">
+        <i class="bi bi-plus-lg me-1"></i> Apply Leave
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Leave Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th>Applied On</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var leave in Model)
+            {
+                <tr>
+                    <td>@leave.LeaveTypeName</td>
+                    <td>@leave.FromDate.ToString("dd MMM yyyy")</td>
+                    <td>@leave.ToDate.ToString("dd MMM yyyy")</td>
+                    <td><span class="badge bg-light text-dark border">@leave.TotalDays</span></td>
+                    <td class="text-muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="@leave.Reason">
+                        @leave.Reason
+                    </td>
+                    <td>@leave.CreatedAt.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @{
+                            var badgeClass = leave.Status switch
+                            {
+                                ErpMini.Domain.Enums.LeaveStatus.Approved => "badge-active",
+                                ErpMini.Domain.Enums.LeaveStatus.Rejected => "badge-inactive",
+                                _ => "bg-warning-subtle text-warning-emphasis border-0"
+                            };
+                        }
+                        <span class="badge @badgeClass">@leave.StatusLabel</span>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-calendar-x" style="font-size:2rem"></i>
+                <p class="mt-2 mb-0">No leave applications yet.</p>
+                <a asp-action="Apply" class="btn btn-dark btn-sm mt-2">Apply for Leave</a>
+            </div>
+        }
+    </div>
+</div>

@@ -1,15 +1,20 @@
-<!-- ErpMini.Web/Views/Leave/LeaveTypes.cshtml -->
 @model IEnumerable<ErpMini.Application.DTOs.LeaveTypeDto>
-@{ ViewData["Title"] = "Leave Types"; }
+@{
+    var isAdmin = User.IsInRole("Admin");
+    ViewData["Title"] = "Leave Types";
+}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h5 class="mb-0 fw-semibold">Leave Types</h5>
-        <small class="text-muted">Configure leave categories</small>
+        <small class="text-muted">Leave categories available</small>
     </div>
-    <button class="btn btn-dark btn-sm px-3" data-bs-toggle="modal" data-bs-target="#addModal">
-        <i class="bi bi-plus-lg me-1"></i> Add Type
-    </button>
+    @if (isAdmin)
+    {
+        <button class="btn btn-dark btn-sm px-3" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="bi bi-plus-lg me-1"></i> Add Type
+        </button>
+    }
 </div>
 
 <div class="card">
@@ -21,7 +26,7 @@
                     <th>Description</th>
                     <th>Days / Year</th>
                     <th>Status</th>
-                    <th></th>
+                    @if (isAdmin) { <th></th> }
                 </tr>
             </thead>
             <tbody>
@@ -33,16 +38,19 @@
                     <td><span class="badge bg-light text-dark border">@lt.TotalDays</span></td>
                     <td><span class="badge @(lt.IsActive ? "badge-active" : "badge-inactive")">
                         @(lt.IsActive ? "Active" : "Inactive")</span></td>
-                    <td class="text-end pe-3">
-                        <form asp-action="DeleteLeaveType" asp-route-id="@lt.Id"
-                              method="post" class="d-inline"
-                              onsubmit="return confirm('Delete @lt.Name?')">
-                            @Html.AntiForgeryToken()
-                            <button class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </td>
+                    @if (isAdmin)
+                    {
+                        <td class="text-end pe-3">
+                            <form asp-action="DeleteLeaveType" asp-route-id="@lt.Id"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete @lt.Name?')">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    }
                 </tr>
             }
             </tbody>
@@ -50,6 +58,8 @@
     </div>
 </div>
 
+@if (isAdmin)
+{
 <!-- Add Modal -->
 <div class="modal fade" id="addModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
@@ -83,3 +93,4 @@
         </div>
     </div>
 </div>
+}

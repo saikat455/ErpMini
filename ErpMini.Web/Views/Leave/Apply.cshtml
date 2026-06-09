@@ -1,9 +1,12 @@
 <!-- ErpMini.Web/Views/Leave/Apply.cshtml -->
 @model ErpMini.Web.ViewModels.ApplyLeaveViewModel
-@{ ViewData["Title"] = "Apply for Leave"; }
+@{
+    var isAdmin = User.IsInRole("Admin");
+    ViewData["Title"] = "Apply for Leave";
+}
 
 <div class="d-flex align-items-center gap-2 mb-4">
-    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+    <a asp-action="@(isAdmin ? "Index" : "MyLeaves")" class="btn btn-sm btn-outline-secondary">
         <i class="bi bi-arrow-left"></i>
     </a>
     <div>
@@ -19,13 +22,20 @@
             <div class="card-body">
                 <form asp-action="Apply" method="post">
                     @Html.AntiForgeryToken()
-                    <div class="mb-3">
-                        <label asp-for="EmployeeId" class="form-label fw-medium"></label>
-                        <select asp-for="EmployeeId" asp-items="Model.Employees" class="form-select">
-                            <option value="">— Select Employee —</option>
-                        </select>
-                        <span asp-validation-for="EmployeeId" class="text-danger small"></span>
-                    </div>
+                    @if (isAdmin)
+                    {
+                        <div class="mb-3">
+                            <label asp-for="EmployeeId" class="form-label fw-medium"></label>
+                            <select asp-for="EmployeeId" asp-items="Model.Employees" class="form-select">
+                                <option value="">— Select Employee —</option>
+                            </select>
+                            <span asp-validation-for="EmployeeId" class="text-danger small"></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <input type="hidden" asp-for="EmployeeId" />
+                    }
                     <div class="mb-3">
                         <label asp-for="LeaveTypeId" class="form-label fw-medium"></label>
                         <select asp-for="LeaveTypeId" asp-items="Model.LeaveTypes" class="form-select">
@@ -57,7 +67,7 @@
                         <button type="submit" class="btn btn-dark">
                             <i class="bi bi-send me-1"></i> Submit Application
                         </button>
-                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <a asp-action="@(isAdmin ? "Index" : "MyLeaves")" class="btn btn-outline-secondary">Cancel</a>
                     </div>
                 </form>
             </div>

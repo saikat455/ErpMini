@@ -9,6 +9,7 @@ public interface IEmployeeService
     Task<EmployeeDto?> GetByIdAsync(int id, int companyId);
     Task<bool> CreateAsync(CreateEmployeeDto dto);         // dto carries CompanyId
     Task<bool> UpdateAsync(int id, CreateEmployeeDto dto); // dto carries CompanyId
+    Task<bool> UpdatePersonalInfoAsync(int id, UpdatePersonalInfoDto dto);
     Task<bool> DeleteAsync(int id, int companyId);
     Task<string> GenerateEmployeeCodeAsync(int companyId);
 }

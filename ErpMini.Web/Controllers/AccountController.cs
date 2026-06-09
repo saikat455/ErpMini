@@ -31,7 +31,7 @@ public class AccountController : Controller
     public IActionResult Login(string? returnUrl = null)
     {
         if (User.Identity?.IsAuthenticated == true)
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToHome();
         ViewBag.ReturnUrl = returnUrl;
         return View();
     }
@@ -72,7 +72,7 @@ public class AccountController : Controller
         {
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToHome(user);
         }
 
         ViewBag.Error = result.IsLockedOut
@@ -96,7 +96,7 @@ public class AccountController : Controller
     public IActionResult Register()
     {
         if (User.Identity?.IsAuthenticated == true)
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToHome();
         return View(new RegisterViewModel());
     }
 
@@ -152,7 +152,7 @@ public class AccountController : Controller
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 TempData["Success"] =
                     $"Welcome! Your company code is: {code} — share it with your employees.";
-                return RedirectToAction("Index", "Dashboard");
+                return RedirectToHome(user);
             }
 
             // Rollback company if user creation failed
@@ -199,8 +199,44 @@ public class AccountController : Controller
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Employee");
+
+                // Auto-create Employee record so self-service pages work
+                var defaultDept = await _context.Departments
+                    .FirstOrDefaultAsync(d => d.CompanyId == company.Id && d.Name == "General");
+                var defaultDesig = await _context.Designations
+                    .FirstOrDefaultAsync(d => d.CompanyId == company.Id && d.Title == "Employee");
+
+                if (defaultDept is not null && defaultDesig is not null)
+                {
+                    var nameParts = (vm.FullName ?? vm.Email).Trim().Split(' ', 2);
+                    var empCount = await _context.Employees
+                        .IgnoreQueryFilters()
+                        .CountAsync(e => e.CompanyId == company.Id);
+                    var employee = new Employee
+                    {
+                        EmployeeCode = $"EMP-{(empCount + 1):D3}",
+                        FirstName = nameParts[0],
+                        LastName = nameParts.Length > 1 ? nameParts[1] : "",
+                        Email = vm.Email.Trim(),
+                        Phone = "",
+                        Address = null,
+                        DateOfBirth = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc),
+                        JoiningDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc),
+                        BasicSalary = 0,
+                        Gender = "",
+                        DepartmentId = defaultDept.Id,
+                        DesignationId = defaultDesig.Id,
+                        CompanyId = company.Id,
+                        UserId = user.Id,
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    _context.Employees.Add(employee);
+                    await _context.SaveChangesAsync();
+                }
+
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Dashboard");
+                return RedirectToHome(user);
             }
 
             ViewBag.Error = string.Join(" ",
@@ -241,7 +277,7 @@ public class AccountController : Controller
         {
             await _signInManager.RefreshSignInAsync(user);
             TempData["Success"] = "Password changed successfully.";
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToHome(user);
         }
 
         ViewBag.Error = string.Join(" ",
@@ -249,7 +285,22 @@ public class AccountController : Controller
         return View();
     }
 
-    // ── Helper ─────────────────────────────────────────────────────
+    // ── Helpers ────────────────────────────────────────────────────
+
+    private IActionResult RedirectToHome()
+    {
+        return User.IsInRole("Admin")
+            ? RedirectToAction("Index", "Dashboard")
+            : RedirectToAction("MyProfile", "Employee");
+    }
+
+    private IActionResult RedirectToHome(ApplicationUser user)
+    {
+        return user.Role == "Admin"
+            ? RedirectToAction("Index", "Dashboard")
+            : RedirectToAction("MyProfile", "Employee");
+    }
+
     private static string GenerateCompanyCode(string companyName)
     {
         var prefix = new string(companyName
@@ -263,6 +314,12 @@ public class AccountController : Controller
 
     private async Task SeedCompanyDefaultsAsync(int companyId)
     {
+        // Default department & designation
+        var dept = new Department { Name = "General", IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow };
+        var desig = new Designation { Title = "Employee", IsActive = true, CompanyId = companyId, CreatedAt = DateTime.UtcNow };
+        _context.Departments.Add(dept);
+        _context.Designations.Add(desig);
+
         // Default leave types for this company
         var leaveTypes = new List<LeaveType>
     {

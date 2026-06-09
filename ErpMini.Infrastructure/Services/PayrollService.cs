@@ -26,6 +26,19 @@ public class PayrollService : IPayrollService
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<PayrollDto>> GetByEmployeeAsync(int employeeId, int companyId)
+    {
+        return await _context.Payrolls
+            .Include(p => p.Employee).ThenInclude(e => e.Department)
+            .Include(p => p.Employee).ThenInclude(e => e.Designation)
+            .Where(p => p.Employee.CompanyId == companyId
+                     && p.EmployeeId == employeeId)
+            .OrderByDescending(p => p.Year)
+            .ThenByDescending(p => p.Month)
+            .Select(p => MapToDto(p))
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<PayrollDto>> GetByMonthYearAsync(
         int month, int year, int companyId)
     {

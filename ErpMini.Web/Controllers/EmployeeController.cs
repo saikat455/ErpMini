@@ -27,6 +27,7 @@ public class EmployeeController : BaseController
         _designationService = desig;
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Index(int page = 1, string? search = null)
     {
         var companyId = await GetCompanyIdAsync();
@@ -46,6 +47,7 @@ public class EmployeeController : BaseController
         return View(employees);
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {
         var companyId = await GetCompanyIdAsync();
@@ -57,6 +59,7 @@ public class EmployeeController : BaseController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(EmployeeViewModel vm)
     {
@@ -92,11 +95,73 @@ public class EmployeeController : BaseController
         return View(await BuildViewModel(vm, companyId));
     }
 
+    public async Task<IActionResult> MyProfile()
+    {
+        var companyId = await GetCompanyIdAsync();
+        var employees = await _employeeService.GetAllAsync(companyId);
+        var emp = employees.FirstOrDefault(e =>
+            string.Equals(e.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase));
+
+        if (emp is null)
+        {
+            var email = User.Identity?.Name;
+            if (email is null) return Forbid();
+
+            var depts = await _departmentService.GetAllAsync(companyId);
+            var desigs = await _designationService.GetAllAsync(companyId);
+
+            if (!depts.Any() || !desigs.Any())
+            {
+                TempData["Error"] = "No department or designation configured. Contact your admin.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var nameParts = email.Split(' ', 2);
+            var dto = new CreateEmployeeDto
+            {
+                FirstName = nameParts[0],
+                LastName = nameParts.Length > 1 ? nameParts[1] : "",
+                Email = email,
+                Phone = "",
+                Address = null,
+                DateOfBirth = DateTime.Today,
+                JoiningDate = DateTime.Today,
+                BasicSalary = 0,
+                Gender = "",
+                DepartmentId = depts.First().Id,
+                DesignationId = desigs.First().Id,
+                CompanyId = companyId
+            };
+
+            var created = await _employeeService.CreateAsync(dto);
+            if (!created)
+            {
+                TempData["Error"] = "Failed to create your profile. Contact your admin.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            employees = await _employeeService.GetAllAsync(companyId);
+            emp = employees.FirstOrDefault(e =>
+                string.Equals(e.Email, email, StringComparison.OrdinalIgnoreCase));
+            if (emp is null) return Forbid();
+        }
+
+        return RedirectToAction(nameof(Edit), new { id = emp.Id });
+    }
+
     public async Task<IActionResult> Edit(int id)
     {
         var companyId = await GetCompanyIdAsync();
         var emp = await _employeeService.GetByIdAsync(id, companyId);
         if (emp is null) return NotFound();
+
+        var isAdmin = User.IsInRole("Admin");
+        var isSelf = string.Equals(emp.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase);
+
+        if (!isAdmin && !isSelf)
+            return Forbid();
+
+        ViewBag.IsAdmin = isAdmin;
 
         return View(await BuildViewModel(new EmployeeViewModel
         {
@@ -120,37 +185,74 @@ public class EmployeeController : BaseController
     public async Task<IActionResult> Edit(int id, EmployeeViewModel vm)
     {
         var companyId = await GetCompanyIdAsync();
+        var emp = await _employeeService.GetByIdAsync(id, companyId);
+        if (emp is null) return NotFound();
+
+        var isAdmin = User.IsInRole("Admin");
+        var isSelf = string.Equals(emp.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase);
+
+        if (!isAdmin && !isSelf)
+            return Forbid();
+
+        ViewBag.IsAdmin = isAdmin;
 
         if (!ModelState.IsValid)
             return View(await BuildViewModel(vm, companyId));
 
-        var dto = new CreateEmployeeDto
+        if (isAdmin)
         {
-            FirstName = vm.FirstName,
-            LastName = vm.LastName,
-            Email = vm.Email,
-            Phone = vm.Phone,
-            Address = vm.Address,
-            DateOfBirth = vm.DateOfBirth,
-            JoiningDate = vm.JoiningDate,
-            BasicSalary = vm.BasicSalary,
-            Gender = vm.Gender,
-            DepartmentId = vm.DepartmentId,
-            DesignationId = vm.DesignationId,
-            CompanyId = companyId
-        };
+            var dto = new CreateEmployeeDto
+            {
+                FirstName = vm.FirstName,
+                LastName = vm.LastName,
+                Email = vm.Email,
+                Phone = vm.Phone,
+                Address = vm.Address,
+                DateOfBirth = vm.DateOfBirth,
+                JoiningDate = vm.JoiningDate,
+                BasicSalary = vm.BasicSalary,
+                Gender = vm.Gender,
+                DepartmentId = vm.DepartmentId,
+                DesignationId = vm.DesignationId,
+                CompanyId = companyId
+            };
 
-        var success = await _employeeService.UpdateAsync(id, dto);
-        if (success)
-        {
-            TempData["Success"] = "Employee updated successfully.";
-            return RedirectToAction(nameof(Index));
+            var success = await _employeeService.UpdateAsync(id, dto);
+            if (success)
+            {
+                TempData["Success"] = "Employee updated successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError("", "Failed to update employee.");
+            return View(await BuildViewModel(vm, companyId));
         }
+        else
+        {
+            var success = await _employeeService.UpdatePersonalInfoAsync(id, new UpdatePersonalInfoDto
+            {
+                FirstName = vm.FirstName,
+                LastName = vm.LastName,
+                Email = vm.Email,
+                Phone = vm.Phone,
+                Address = vm.Address,
+                DateOfBirth = vm.DateOfBirth,
+                Gender = vm.Gender,
+                CompanyId = companyId
+            });
 
-        ModelState.AddModelError("", "Failed to update employee.");
-        return View(await BuildViewModel(vm, companyId));
+            if (success)
+            {
+                TempData["Success"] = "Profile updated successfully.";
+                return RedirectToAction(nameof(Edit), new { id });
+            }
+
+            ModelState.AddModelError("", "Failed to update profile.");
+            return View(await BuildViewModel(vm, companyId));
+        }
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Details(int id)
     {
         var companyId = await GetCompanyIdAsync();
@@ -160,6 +262,7 @@ public class EmployeeController : BaseController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

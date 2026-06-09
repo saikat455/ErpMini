@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ErpMini.Web.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class DepartmentController : BaseController
 {
     private readonly IDepartmentService _service;
